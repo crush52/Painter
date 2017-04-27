@@ -40,3 +40,5 @@ HEADERS  += mainwindow.h \
     ellipseinstr.h
 
 FORMS    += mainwindow.ui
+
+RESOURCES +=

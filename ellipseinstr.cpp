@@ -3,7 +3,7 @@
 
 EllipseInstr::EllipseInstr(QWidget *parent) : CommonInstr(parent)
 {
-    imageArea = (ImageArea*)parent;
+    imageArea = dynamic_cast<ImageArea*>(parent);
 }
 
 void EllipseInstr::mousePressEvent(QMouseEvent *event)

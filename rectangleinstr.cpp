@@ -3,7 +3,7 @@
 
 RectangleInstr::RectangleInstr(QWidget *parent) : CommonInstr(parent)
 {
-    imageArea = (ImageArea*)parent;
+    imageArea = dynamic_cast<ImageArea*>(parent);
 }
 
 void RectangleInstr::mousePressEvent(QMouseEvent *event)

@@ -6,13 +6,16 @@
 #include <iostream>
 #include "rectangleinstr.h"
 #include "ellipseinstr.h"
+#include "mainwindow.h"
 
 ImageArea::ImageArea(QWidget *parent) : QWidget(parent)
 {
     this->setGeometry(50,100,parent->size().width()-5,parent->size().height()-5);
     image = new QImage(size(),QImage::Format_ARGB32_Premultiplied);
-    pen = new QPen(Qt::black,0,Qt::DashLine);
+    pen = new QPen(Qt::black,0,Qt::NoPen);
     brush = new QBrush(QBrush(Qt::white, Qt::SolidPattern));
+    imageColorFirst = new QImage(QSize(21,21),QImage::Format_ARGB32_Premultiplied);
+    imageColorSecond = new QImage(QSize(21,21),QImage::Format_ARGB32_Premultiplied);
 //    QPainter painter;
 //    painter.begin(image);
 //    painter.setBackground(QBrush(Qt::GlobalColor::white));
@@ -49,20 +52,11 @@ void ImageArea::keyPressEvent(QKeyEvent *event)
     }
 }
 
-QImage* ImageArea::getImage()
-{
-    return image;
-}
+QImage* ImageArea::getImage(){    return image;}
 
-QPen ImageArea::getPen()
-{
-    return *pen;
-}
+QPen ImageArea::getPen(){    return *pen;}
 
-QBrush ImageArea::getBrush()
-{
-    return *brush;
-}
+QBrush ImageArea::getBrush(){    return *brush;}
 
 void ImageArea::setInstrument(int choice)
 {
@@ -77,8 +71,40 @@ void ImageArea::setWidth_(int width)
 
 void ImageArea::setColor_(QString color)
 {
-    brush->setColor(QColor(color));
-//    std::cout << color << std::endl;
+    if(numOfColor == 1)
+    {
+        brush->setColor(QColor(color));
+        colorFirst = color;
+    }
+    else
+    {
+        pen->setColor(QColor(color));
+        colorSecond = color;
+    }
+    QPainter painter;
+    painter.begin(imageColorFirst);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.setPen(QPen(Qt::black,4,Qt::SolidLine));
+    painter.setBrush(QBrush(QColor(colorFirst), Qt::SolidPattern));
+    painter.drawRect(QRect(QPoint(0,0),QPoint(21,21)));
+    painter.end();
+    painter.begin(imageColorSecond);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.setPen(QPen(Qt::black,4,Qt::SolidLine));
+    painter.setBrush(QBrush(QColor(colorSecond), Qt::SolidPattern));
+    painter.drawRect(QRect(QPoint(0,0),QPoint(21,21)));
+    painter.end();
+    (dynamic_cast<MainWindow*>(parentWidget()))->setColorWidget(imageColorFirst,imageColorSecond);
+}
+
+void ImageArea::setPenStyle_(int style)
+{
+    pen->setStyle(Qt::PenStyle(style));
+}
+
+void ImageArea::setNumOfColor(int number)
+{
+    numOfColor = number;
 }
 
 void ImageArea::paintEvent(QPaintEvent *event)

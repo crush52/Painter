@@ -29,12 +29,17 @@ public slots:
     void setInstrument(int);
     void setWidth_(int);
     void setColor_(QString);
+    void setPenStyle_(int);
+    void setNumOfColor(int);
 private:
     QImage *image,*imageCopy;
     QVector<CommonInstr*> instruments;
     QPen *pen;
     QBrush *brush;
+    QImage* imageColorFirst,*imageColorSecond;
+    QString colorFirst,colorSecond;
     int choosenInstr;
+    int numOfColor;
 
 protected:
     void paintEvent(QPaintEvent *event);
