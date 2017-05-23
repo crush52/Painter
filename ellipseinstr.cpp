@@ -1,37 +1,37 @@
 #include "ellipseinstr.h"
 #include <QPainter>
+#include <iostream>
 
 EllipseInstr::EllipseInstr(QWidget *parent) : CommonInstr(parent)
 {
     imageArea = dynamic_cast<ImageArea*>(parent);
 }
 
-void EllipseInstr::mousePressEvent(QMouseEvent *event)
+void EllipseInstr::mousePress(QMouseEvent *me)
 {
-    start = event->pos();
+    start = end = me->pos();
+//    use();
 }
 
-void EllipseInstr::mouseMoveEvent(QMouseEvent *event)
+void EllipseInstr::mouseMove(QMouseEvent *me)
 {
-    end = event->pos();
-    paint();
+    end = me->pos();
+    use();
 }
 
-void EllipseInstr::mouseReleaseEvent(QMouseEvent *event)
+void EllipseInstr::mouseRelease(QMouseEvent *me)
 {
-
+    imageArea->setChangeFlag(false);
 }
 
-void EllipseInstr::paint()
+void EllipseInstr::use()
 {
-    QPainter painter(imageArea->getImage());
+    QPainter painter(imageArea->getPartOfImage());
     painter.setRenderHint(QPainter::Antialiasing, true);
-
-    //painter.setPen(QPen(Qt::black, 12, Qt::DashDotLine, Qt::RoundCap));
     painter.setPen(imageArea->getPen());
-//    painter.setBrush(QBrush(Qt::green, Qt::SolidPattern));
     painter.setBrush(imageArea->getBrush());
     painter.drawEllipse(QRect(start,end));
     painter.end();
+    imageArea->setChangeFlag(true);
     imageArea->update();
 }

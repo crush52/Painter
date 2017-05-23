@@ -11,10 +11,13 @@ class CommonInstr : public QWidget
     Q_OBJECT
 public:
     explicit CommonInstr(QWidget *parent = 0);
+//    virtual void use() = 0;
+    virtual void mousePress(QMouseEvent*) = 0;
+    virtual void mouseMove(QMouseEvent *) = 0;
+    virtual void mouseRelease(QMouseEvent*) = 0;
 
-    virtual void mousePressEvent(QMouseEvent *) = 0;
-    virtual void mouseMoveEvent(QMouseEvent *) = 0;
-    virtual void mouseReleaseEvent(QMouseEvent *) = 0;
+    void setStartPoint(QPoint);
+    void setEndPoint(QPoint);
 signals:
 
 public slots:

@@ -4,30 +4,39 @@
 #include <QSignalMapper>
 #include <iostream>
 #include <QPainter>
+#include <QScrollArea>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->ImageArea = new ImageArea(this);
+    this->setGeometry(QRect(50,50,900,500));
+    scrollArea = new QScrollArea(this);
+    scrollArea->setGeometry(QRect(initialPoint,QPoint(size().width(),size().height())));
+    imageArea = new ImageArea(scrollArea);
     imageColorFirst = new QImage(QSize(21,21),QImage::Format_ARGB32_Premultiplied);
     imageColorSecond = new QImage(QSize(21,21),QImage::Format_ARGB32_Premultiplied);
+    scrollArea->setWidget(imageArea);
+    scrollArea->setBackgroundRole(QPalette::Dark);
+
 
     //Установка инструментов по нажатию
     QSignalMapper* psigMapperInstrument = new QSignalMapper();
-    QObject::connect(psigMapperInstrument,SIGNAL(mapped(int)),ui->ImageArea,SLOT(setInstrument(int)));
-    psigMapperInstrument->setMapping(ui->Rectangle,RECT);
-    QObject::connect(ui->Rectangle,SIGNAL(clicked()),psigMapperInstrument,SLOT(map()));
-    psigMapperInstrument->setMapping(ui->Ellipse,ELLIPSE);
-    QObject::connect(ui->Ellipse,SIGNAL(clicked()),psigMapperInstrument,SLOT(map()));
+    QObject::connect(psigMapperInstrument,SIGNAL(mapped(int)),imageArea,SLOT(setInstrument(int)));
+    psigMapperInstrument->setMapping(ui->rectangle,RECT);
+    QObject::connect(ui->rectangle,SIGNAL(clicked()),psigMapperInstrument,SLOT(map()));
+    psigMapperInstrument->setMapping(ui->ellipse,ELLIPSE);
+    QObject::connect(ui->ellipse,SIGNAL(clicked()),psigMapperInstrument,SLOT(map()));
+    psigMapperInstrument->setMapping(ui->zoom,ZOOM);
+    QObject::connect(ui->zoom,SIGNAL(clicked()),psigMapperInstrument,SLOT(map()));
 
     //Установка толщины
-    QObject::connect(ui->Width,SIGNAL(valueChanged(int)),ui->ImageArea,SLOT(setWidth_(int)));
+    QObject::connect(ui->width,SIGNAL(valueChanged(int)),imageArea,SLOT(setWidth_(int)));
 
     //Установка цвета
     QSignalMapper* psigMapperColor = new QSignalMapper();
-    QObject::connect(psigMapperColor,SIGNAL(mapped(QString)),ui->ImageArea,SLOT(setColor_(QString)));
+    QObject::connect(psigMapperColor,SIGNAL(mapped(QString)),imageArea,SLOT(setColor_(QString)));
     psigMapperColor->setMapping(ui->red,"red");
     QObject::connect(ui->red,SIGNAL(clicked()),psigMapperColor,SLOT(map()));
     psigMapperColor->setMapping(ui->white,"white");
@@ -43,10 +52,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //Установка типа линии
 //    QSignalMapper* psigMapperStyle = new QSignalMapper();
-    QObject::connect(ui->Line,SIGNAL(currentIndexChanged(int)),ui->ImageArea,SLOT(setPenStyle_(int)));
+    QObject::connect(ui->line,SIGNAL(currentIndexChanged(int)),imageArea,SLOT(setPenStyle_(int)));
 
     QSignalMapper* psigMapperNumOfColor = new QSignalMapper();
-    QObject::connect(psigMapperNumOfColor,SIGNAL(mapped(int)),ui->ImageArea,SLOT(setNumOfColor(int)));
+    QObject::connect(psigMapperNumOfColor,SIGNAL(mapped(int)),imageArea,SLOT(setNumOfColor(int)));
     psigMapperNumOfColor->setMapping(ui->colorFirst,1);
     QObject::connect(ui->colorFirst,SIGNAL(clicked()),psigMapperNumOfColor,SLOT(map()));
     psigMapperNumOfColor->setMapping(ui->colorSecond,2);
@@ -54,7 +63,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     //Выбор начальных инструментов
-    ui->Rectangle->click();
+    ui->rectangle->click();
     ui->colorSecond->click();
     ui->black->click();
     ui->colorFirst->click();
@@ -77,9 +86,28 @@ void MainWindow::paintEvent(QPaintEvent *event)
     this->update();
 }
 
+void MainWindow::resizeEvent(QResizeEvent *re)
+{
+    scrollArea->setGeometry(QRect(initialPoint,QPoint(size().width()-initialPoint.x(),size().height()-initialPoint.y())));
+}
+
+void MainWindow::mousePressEvent(QMouseEvent *me)
+{
+
+}
+
+void MainWindow::mouseMoveEvent(QMouseEvent *me)
+{
+    std::cout << "HI" << std::endl;
+}
+
+void MainWindow::mouseReleaseEvent(QMouseEvent *me)
+{
+
+}
+
+
 MainWindow::~MainWindow()
 {
     delete ui;
 }
-
-//((ImageArea*)ui->ImageArea)->rectInstr())

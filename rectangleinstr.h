@@ -2,23 +2,22 @@
 #define RECTANGLEINSTR_H
 
 #include "commoninstr.h"
-class CommonInstr;
+//class CommonInstr;
 
 class RectangleInstr : public CommonInstr
 {
     Q_OBJECT
 public:
     explicit RectangleInstr(QWidget *parent = 0);
-
-    void mousePressEvent(QMouseEvent *);
-    void mouseMoveEvent(QMouseEvent *);
-    void mouseReleaseEvent(QMouseEvent *);
+    void mousePress(QMouseEvent*);
+    void mouseMove(QMouseEvent *);
+    void mouseRelease(QMouseEvent*);
 signals:
 
 public slots:
 
 protected:
-    void paint();
+    void use();
 };
 
 #endif // RECTANGLEINSTR_H

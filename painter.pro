@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui
+QMAKE_CXXFLAGS += -std=c++0x
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -28,7 +29,8 @@ SOURCES += main.cpp\
     imagearea.cpp \
     rectangleinstr.cpp \
     commoninstr.cpp \
-    ellipseinstr.cpp
+    ellipseinstr.cpp \
+    zoominstr.cpp
 
 #RESOURCES += stock_draw-rectangle-unfilled.png
 
@@ -37,7 +39,8 @@ HEADERS  += mainwindow.h \
     rectangleinstr.h \
     commoninstr.h \
     enuminstruments.h \
-    ellipseinstr.h
+    ellipseinstr.h \
+    zoominstr.h
 
 FORMS    += mainwindow.ui
 

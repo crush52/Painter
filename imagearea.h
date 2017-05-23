@@ -9,7 +9,11 @@
 #include <QString>
 #include "commoninstr.h"
 class CommonInstr;
+class MainWindow;
 #include "enuminstruments.h"
+#include "mainwindow.h"
+#include <QScrollArea>
+#include <QLabel>
 
 class ImageArea : public QWidget
 {
@@ -20,9 +24,19 @@ public:
     void mouseMoveEvent(QMouseEvent *);
     void mouseReleaseEvent(QMouseEvent *);
     void keyPressEvent(QKeyEvent *);
+    void resize(int w, int h, bool zoom);
+    QImage* getPartOfImage();
     QImage* getImage();
+    QImage* getImageCopy();
+
     QPen getPen();
     QBrush getBrush();
+    QSize getSize();
+    float getScaledFactor();
+    void setScaledFactor(float);
+    void setChangeFlag(bool);
+    bool isLeftButtonClicked();
+//    ~ImageArea();
 signals:
 
 public slots:
@@ -32,14 +46,24 @@ public slots:
     void setPenStyle_(int);
     void setNumOfColor(int);
 private:
-    QImage *image,*imageCopy;
+    QImage *image,*imageCopy,*part_of_image,*clearImage;
     QVector<CommonInstr*> instruments;
     QPen *pen;
     QBrush *brush;
     QImage* imageColorFirst,*imageColorSecond;
     QString colorFirst,colorSecond;
+    MainWindow* mainWindow;
+    QSize realSize;
+    QPoint start,end;
+    float scaledFactor;
+    bool resizeFlag;
     int choosenInstr;
     int numOfColor;
+    bool isLeftButton;
+    bool changeFlag;
+
+
+    bool flag;
 
 protected:
     void paintEvent(QPaintEvent *event);
