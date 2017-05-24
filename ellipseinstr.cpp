@@ -22,16 +22,18 @@ void EllipseInstr::mouseMove(QMouseEvent *me)
 void EllipseInstr::mouseRelease(QMouseEvent *me)
 {
     imageArea->setChangeFlag(false);
+    imageArea->setChangeAfterFlag(true);
 }
 
 void EllipseInstr::use()
 {
+    imageArea->setChangeFlag(true);
+    *(imageArea->getImage()) = *(imageArea->getImageCopy());
     QPainter painter(imageArea->getPartOfImage());
     painter.setRenderHint(QPainter::Antialiasing, true);
     painter.setPen(imageArea->getPen());
     painter.setBrush(imageArea->getBrush());
     painter.drawEllipse(QRect(start,end));
     painter.end();
-    imageArea->setChangeFlag(true);
     imageArea->update();
 }

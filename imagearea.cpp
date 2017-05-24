@@ -7,12 +7,12 @@
 #include "rectangleinstr.h"
 #include "ellipseinstr.h"
 #include "zoominstr.h"
+#include <QtDebug>
 
 
 ImageArea::ImageArea(QWidget *parent) : QWidget(parent)
 {
     this->setGeometry(QRect(initialPoint,QSize(600,400)));
-//    std::cout << size().width() << ' ' << size().height() << std::endl;
     mainWindow = dynamic_cast<MainWindow*>(parent->parentWidget());
 
     image = new QImage(QSize(size().width()-10,size().height()-10),QImage::Format_ARGB32_Premultiplied);
@@ -29,10 +29,11 @@ ImageArea::ImageArea(QWidget *parent) : QWidget(parent)
     clearImage = new QImage(image->size(),QImage::Format_ARGB32_Premultiplied);
     part_of_image = new QImage(image->size(),QImage::Format_ARGB32_Premultiplied);
 
-    start = end = QPoint(-1,-1);
-
     resizeFlag = false;
     changeFlag = false;
+    changeAfterFlag = false;
+    moveObjectFlag = false;
+    resizeObjectFlag = false;
 
     instruments.resize(numOfInstr);
     instruments[RECT] = new RectangleInstr(this);
@@ -43,12 +44,39 @@ ImageArea::ImageArea(QWidget *parent) : QWidget(parent)
 void ImageArea::mousePressEvent(QMouseEvent *event)
 {
 //    std::cout << event->pos().x() << ' ' << event->pos().y() << std::endl;
-    if(event->pos().x()>image->width() && event->pos().x()<image->width()+7 &&
-            event->pos().y()>image->height() && event->pos().y()<image->height()+7)
+    //
+    if(QRect(QPoint(image->width(),image->height()),QSize(7,7)).contains(event->pos()))
     {
         resizeFlag = true;
         return;
     }
+    //
+    {
+        int tmp;
+
+        if(start.x()>end.x())
+        {
+            tmp = start.x();
+            start = QPoint(end.x(),start.y());
+            end = QPoint(tmp,end.y());
+        }
+        if(start.y()>end.y())
+        {
+            tmp = start.y();
+            start = QPoint(start.x(),end.y());
+            end = QPoint(end.x(),tmp);
+        }
+    }
+//    qDebug() << start.x() << ' ' << start.y();
+    if(changeAfterFlag && QRect(start,end).contains(event->pos()))
+    {
+//        qDebug() << start.x() << ' ' << start.y() << ' ' << instruments[choosenInstr]->getStartPoint().x() << ' ' << instruments[choosenInstr]->getStartPoint().y();
+        moveObjectFlag = true;
+        click = event->pos();
+        return;
+    }
+    else     changeAfterFlag = false;
+
     isLeftButton = (event->button() == Qt::LeftButton);
     if(!isLeftButton)
     {
@@ -56,7 +84,7 @@ void ImageArea::mousePressEvent(QMouseEvent *event)
         pen->setColor(colorFirst);
     }
     *imageCopy = *image;
-    start = end = event->pos();
+//    start = event->pos();
 
     if(clearImage->size().width()!=image->size().width() || clearImage->size().height()!=image->size().height())
     {
@@ -65,14 +93,13 @@ void ImageArea::mousePressEvent(QMouseEvent *event)
     }
 
     instruments[choosenInstr]->mousePress(event);
-//    instruments[choosenInstr]->setStartPoint(event->pos());
-//    instruments[choosenInstr]->setEndPoint(event->pos());
-//    instruments[choosenInstr]->use();
+    start = instruments[choosenInstr]->getStartPoint();
 }
 
 void ImageArea::mouseMoveEvent(QMouseEvent *event)
 {
-    std::cout << "MOVE " << event->pos().x() << ' ' << event->pos().y() << std::endl;
+//    std::cout << "MOVE " << event->pos().x() << ' ' << event->pos().y() << std::endl;
+
     if(resizeFlag)
     {
         if(event->pos().x()>1 && event->pos().y()>1)
@@ -82,28 +109,42 @@ void ImageArea::mouseMoveEvent(QMouseEvent *event)
         }
         else return;
     }
+    //event->pos() - (start - click)
+    if(moveObjectFlag)
+    {
+        *image = *imageCopy;
+        QPainter painter;
+        painter.begin(image);
+//        qDebug() << instruments[choosenInstr]->getStartPoint().x() << ' ' << instruments[choosenInstr]->getStartPoint().y();
+        start = start + event->pos() - click;
+        end = end + event->pos() - click;
+        painter.drawImage(event->pos() - click,*part_of_image,part_of_image->rect());
+        painter.end();
+//        click = event->pos();
+        this->update();
+        return;
+    }
 
-    end = event->pos();
     *part_of_image = *clearImage;
-    *image = *imageCopy;
     instruments[choosenInstr]->mouseMove(event);
     if(changeFlag)
     {
         QPainter painter;
         painter.begin(image);
-//        painter.drawImage(QRect(start,end),*part_of_image,QRect(start,end));
-//        painter.drawImage(event->rect(),*part_of_image,event->rect());
         painter.drawImage(image->rect(),*part_of_image,part_of_image->rect());
         painter.end();
+        end = instruments[choosenInstr]->getEndPoint();
     }
-//    instruments[choosenInstr]->setEndPoint(event->pos());
-//    instruments[choosenInstr]->use();
 }
 
 void ImageArea::mouseReleaseEvent(QMouseEvent *event)
 {
-    std::cout << "RELEASE " << event->pos().x() << ' ' << event->pos().y() << std::endl;
-
+//    std::cout << "RELEASE " << event->pos().x() << ' ' << event->pos().y() << std::endl;
+    if(moveObjectFlag)
+    {
+        moveObjectFlag = false;
+        return;
+    }
     resizeFlag = false;
     if(!isLeftButton)
     {
@@ -171,6 +212,11 @@ void ImageArea::setScaledFactor(float scaledFactor)
 void ImageArea::setChangeFlag(bool flag)
 {
     changeFlag = flag;
+}
+
+void ImageArea::setChangeAfterFlag(bool flag)
+{
+    changeAfterFlag = flag;
 }
 
 bool ImageArea::isLeftButtonClicked()

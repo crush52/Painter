@@ -20,10 +20,10 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>381</x>
+      <x>358</x>
       <y>11</y>
-      <width>28</width>
-      <height>16</height>
+      <width>51</width>
+      <height>20</height>
      </rect>
     </property>
     <property name="text">
@@ -39,7 +39,7 @@
       <x>640</x>
       <y>0</y>
       <width>144</width>
-      <height>52</height>
+      <height>71</height>
      </rect>
     </property>
     <property name="title">
@@ -207,10 +207,10 @@ border-style: solid;
    <widget class="QGroupBox" name="groupBox_2">
     <property name="geometry">
      <rect>
-      <x>260</x>
+      <x>200</x>
       <y>0</y>
-      <width>91</width>
-      <height>55</height>
+      <width>151</width>
+      <height>71</height>
      </rect>
     </property>
     <property name="title">
@@ -271,10 +271,10 @@ border-style: solid;
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>381</x>
+      <x>359</x>
       <y>41</y>
-      <width>19</width>
-      <height>16</height>
+      <width>41</width>
+      <height>20</height>
      </rect>
     </property>
     <property name="text">
@@ -415,7 +415,7 @@ border-style: solid;
      <x>0</x>
      <y>0</y>
      <width>810</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>

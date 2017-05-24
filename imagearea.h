@@ -24,17 +24,22 @@ public:
     void mouseMoveEvent(QMouseEvent *);
     void mouseReleaseEvent(QMouseEvent *);
     void keyPressEvent(QKeyEvent *);
+
     void resize(int w, int h, bool zoom);
+//    void move(const QPoint &);
+
     QImage* getPartOfImage();
     QImage* getImage();
     QImage* getImageCopy();
-
     QPen getPen();
     QBrush getBrush();
     QSize getSize();
     float getScaledFactor();
+
     void setScaledFactor(float);
     void setChangeFlag(bool);
+    void setChangeAfterFlag(bool);
+
     bool isLeftButtonClicked();
 //    ~ImageArea();
 signals:
@@ -54,16 +59,16 @@ private:
     QString colorFirst,colorSecond;
     MainWindow* mainWindow;
     QSize realSize;
-    QPoint start,end;
+    QPoint start,end,click;
     float scaledFactor;
     bool resizeFlag;
     int choosenInstr;
     int numOfColor;
     bool isLeftButton;
     bool changeFlag;
-
-
-    bool flag;
+    bool changeAfterFlag;
+    bool moveObjectFlag;
+    bool resizeObjectFlag;
 
 protected:
     void paintEvent(QPaintEvent *event);

@@ -5,12 +5,12 @@ CommonInstr::CommonInstr(QWidget *parent) : QWidget(parent)
 
 }
 
-void CommonInstr::setStartPoint(QPoint start)
+QPoint CommonInstr::getStartPoint()
 {
-    this->start = start;
+    return start;
 }
 
-void CommonInstr::setEndPoint(QPoint end)
+QPoint CommonInstr::getEndPoint()
 {
-    this->end = end;
+    return end;
 }

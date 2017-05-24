@@ -21,18 +21,18 @@ void RectangleInstr::mouseMove(QMouseEvent *me)
 void RectangleInstr::mouseRelease(QMouseEvent *me)
 {
     imageArea->setChangeFlag(false);
+    imageArea->setChangeAfterFlag(true);
 }
 
 void RectangleInstr::use()
 {
     imageArea->setChangeFlag(true);
-//    *(imageArea->getImage()) = *(imageArea->getImageCopy());
+    *(imageArea->getImage()) = *(imageArea->getImageCopy());
     QPainter painter(imageArea->getPartOfImage());
     painter.setRenderHint(QPainter::Antialiasing, true);
     painter.setPen(imageArea->getPen());
     painter.setBrush(imageArea->getBrush());
     painter.drawRect(QRect(start,end));
-//    painter.drawRect(QRect(QPoint(0,0),QSize(end.x()-start.x(),end.y()-start.y())));
     painter.end();
     imageArea->update();
 
