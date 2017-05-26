@@ -21,8 +21,25 @@ void EllipseInstr::mouseMove(QMouseEvent *me)
 
 void EllipseInstr::mouseRelease(QMouseEvent *me)
 {
+    if(start == end) return;
     imageArea->setChangeFlag(false);
     imageArea->setChangeAfterFlag(true);
+//    {
+//        int tmp;
+
+//        if(start.x()>end.x())
+//        {
+//            tmp = start.x();
+//            start = QPoint(end.x(),start.y());
+//            end = QPoint(tmp,end.y());
+//        }
+//        if(start.y()>end.y())
+//        {
+//            tmp = start.y();
+//            start = QPoint(start.x(),end.y());
+//            end = QPoint(end.x(),tmp);
+//        }
+//    }
 }
 
 void EllipseInstr::use()

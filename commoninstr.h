@@ -15,6 +15,7 @@ public:
     virtual void mousePress(QMouseEvent*) = 0;
     virtual void mouseMove(QMouseEvent *) = 0;
     virtual void mouseRelease(QMouseEvent*) = 0;
+    void setStartPoint(QPoint);
     QPoint getStartPoint();
     QPoint getEndPoint();
 signals:

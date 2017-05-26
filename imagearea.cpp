@@ -7,7 +7,9 @@
 #include "rectangleinstr.h"
 #include "ellipseinstr.h"
 #include "zoominstr.h"
+#include "fillinstr.h"
 #include <QtDebug>
+#include <algorithm>
 
 
 ImageArea::ImageArea(QWidget *parent) : QWidget(parent)
@@ -33,49 +35,45 @@ ImageArea::ImageArea(QWidget *parent) : QWidget(parent)
     changeFlag = false;
     changeAfterFlag = false;
     moveObjectFlag = false;
-    resizeObjectFlag = false;
+    dif = QPoint(0,0);
 
     instruments.resize(numOfInstr);
     instruments[RECT] = new RectangleInstr(this);
     instruments[ELLIPSE] = new EllipseInstr(this);
     instruments[ZOOM] = new ZoomInstr(this);
+    instruments[FILL] = new FillInstr(this);
 }
 
 void ImageArea::mousePressEvent(QMouseEvent *event)
 {
-//    std::cout << event->pos().x() << ' ' << event->pos().y() << std::endl;
     //
     if(QRect(QPoint(image->width(),image->height()),QSize(7,7)).contains(event->pos()))
     {
         resizeFlag = true;
+        changeAfterFlag = false;
         return;
     }
     //
-    {
-        int tmp;
 
-        if(start.x()>end.x())
-        {
-            tmp = start.x();
-            start = QPoint(end.x(),start.y());
-            end = QPoint(tmp,end.y());
-        }
-        if(start.y()>end.y())
-        {
-            tmp = start.y();
-            start = QPoint(start.x(),end.y());
-            end = QPoint(end.x(),tmp);
-        }
-    }
-//    qDebug() << start.x() << ' ' << start.y();
     if(changeAfterFlag && QRect(start,end).contains(event->pos()))
     {
-//        qDebug() << start.x() << ' ' << start.y() << ' ' << instruments[choosenInstr]->getStartPoint().x() << ' ' << instruments[choosenInstr]->getStartPoint().y();
         moveObjectFlag = true;
         click = event->pos();
         return;
     }
-    else     changeAfterFlag = false;
+    else if(changeAfterFlag &&
+            QRect(QPoint(std::max(start.x(),end.x()),std::max(start.y(),end.y()))+QPoint(1,1),QSize(7,7)).contains(event->pos()))
+    {
+        instruments[choosenInstr]->setStartPoint(QPoint(std::min(start.x(),end.x()),std::min(start.y(),end.y())));
+        start = QPoint(std::min(start.x(),end.x()),std::min(start.y(),end.y()));
+        return;
+    }
+    else
+    {
+        changeAfterFlag = false;
+        this->update();
+        dif = QPoint(0,0);
+    }
 
     isLeftButton = (event->button() == Qt::LeftButton);
     if(!isLeftButton)
@@ -84,7 +82,6 @@ void ImageArea::mousePressEvent(QMouseEvent *event)
         pen->setColor(colorFirst);
     }
     *imageCopy = *image;
-//    start = event->pos();
 
     if(clearImage->size().width()!=image->size().width() || clearImage->size().height()!=image->size().height())
     {
@@ -98,8 +95,6 @@ void ImageArea::mousePressEvent(QMouseEvent *event)
 
 void ImageArea::mouseMoveEvent(QMouseEvent *event)
 {
-//    std::cout << "MOVE " << event->pos().x() << ' ' << event->pos().y() << std::endl;
-
     if(resizeFlag)
     {
         if(event->pos().x()>1 && event->pos().y()>1)
@@ -109,21 +104,13 @@ void ImageArea::mouseMoveEvent(QMouseEvent *event)
         }
         else return;
     }
-    //event->pos() - (start - click)
+    /////////////////////////
     if(moveObjectFlag)
     {
-        *image = *imageCopy;
-        QPainter painter;
-        painter.begin(image);
-//        qDebug() << instruments[choosenInstr]->getStartPoint().x() << ' ' << instruments[choosenInstr]->getStartPoint().y();
-        start = start + event->pos() - click;
-        end = end + event->pos() - click;
-        painter.drawImage(event->pos() - click,*part_of_image,part_of_image->rect());
-        painter.end();
-//        click = event->pos();
-        this->update();
+        moveObject(event->pos());
         return;
     }
+    /////////////////////////
 
     *part_of_image = *clearImage;
     instruments[choosenInstr]->mouseMove(event);
@@ -139,7 +126,6 @@ void ImageArea::mouseMoveEvent(QMouseEvent *event)
 
 void ImageArea::mouseReleaseEvent(QMouseEvent *event)
 {
-//    std::cout << "RELEASE " << event->pos().x() << ' ' << event->pos().y() << std::endl;
     if(moveObjectFlag)
     {
         moveObjectFlag = false;
@@ -152,6 +138,7 @@ void ImageArea::mouseReleaseEvent(QMouseEvent *event)
         pen->setColor(colorSecond);
     }
     instruments[choosenInstr]->mouseRelease(event);
+    this->update();
 }
 
 void ImageArea::keyPressEvent(QKeyEvent *event)
@@ -178,62 +165,66 @@ void ImageArea::resize(int w, int h, bool zoom)
     image = imageCopy_;
 }
 
+void ImageArea::moveObject(QPoint mousePoint)
+{
+    *image = *imageCopy;
+    QPainter painter;
+    start = start + mousePoint - click;
+    end = end + mousePoint - click;
+    dif += mousePoint - click;
+    painter.begin(image);
+    painter.drawImage(dif,*part_of_image,part_of_image->rect());
+    painter.end();
+    click = mousePoint;
+    this->update();
+    return;
+}
+
+
+void ImageArea::paintEvent(QPaintEvent *event)
+{
+    QPainter painter;
+    painter.begin(this);
+    painter.drawImage(0,0,*image,0,0);
+
+    painter.setBrush(QBrush(Qt::white, Qt::SolidPattern));
+    painter.setPen(QPen(Qt::blue,2,Qt::SolidLine));
+    painter.drawRect(image->width(),image->height(),7,7);
+    if(changeAfterFlag)
+    {
+        painter.drawRect(QRect(QPoint(std::max(start.x(),end.x()),std::max(start.y(),end.y()))+QPoint(1,1),QSize(7,7)));
+        painter.setBrush(Qt::NoBrush);
+        painter.setPen(QPen(Qt::blue,1,Qt::SolidLine));
+        painter.drawRect(QRect(start,end));
+    }
+    painter.end();
+}
+
 QImage* ImageArea::getPartOfImage(){    return part_of_image;}
 
-QImage *ImageArea::getImage()
-{
-    return image;
-}
+QImage *ImageArea::getImage(){    return image;}
 
-QImage *ImageArea::getImageCopy()
-{
-    return imageCopy;
-}
+QImage *ImageArea::getImageCopy(){    return imageCopy;}
 
 QPen ImageArea::getPen(){    return *pen;}
 
 QBrush ImageArea::getBrush(){    return *brush;}
 
-QSize ImageArea::getSize()
-{
-    return realSize;
-}
+QSize ImageArea::getSize(){    return realSize;}
 
-float ImageArea::getScaledFactor()
-{
-    return scaledFactor;
-}
+float ImageArea::getScaledFactor(){    return scaledFactor;}
 
-void ImageArea::setScaledFactor(float scaledFactor)
-{
-    this->scaledFactor = scaledFactor;
-}
+void ImageArea::setScaledFactor(float scaledFactor){    this->scaledFactor = scaledFactor;}
 
-void ImageArea::setChangeFlag(bool flag)
-{
-    changeFlag = flag;
-}
+void ImageArea::setChangeFlag(bool flag){    changeFlag = flag;}
 
-void ImageArea::setChangeAfterFlag(bool flag)
-{
-    changeAfterFlag = flag;
-}
+void ImageArea::setChangeAfterFlag(bool flag){    changeAfterFlag = flag;}
 
-bool ImageArea::isLeftButtonClicked()
-{
-    return isLeftButton;
-}
+bool ImageArea::isLeftButtonClicked(){    return isLeftButton;}
 
+void ImageArea::setInstrument(int choice){    choosenInstr = choice;}
 
-void ImageArea::setInstrument(int choice)
-{
-    choosenInstr = choice;
-}
-
-void ImageArea::setWidth_(int width)
-{
-    pen->setWidth(width);
-}
+void ImageArea::setWidth_(int width){    pen->setWidth(width);}
 
 void ImageArea::setColor_(QString color)
 {
@@ -263,25 +254,6 @@ void ImageArea::setColor_(QString color)
     mainWindow->setColorWidget(imageColorFirst,imageColorSecond);
 }
 
-void ImageArea::setPenStyle_(int style)
-{
-    pen->setStyle(Qt::PenStyle(style));
-}
+void ImageArea::setPenStyle_(int style){    pen->setStyle(Qt::PenStyle(style));}
 
-void ImageArea::setNumOfColor(int number)
-{
-    numOfColor = number;
-}
-
-void ImageArea::paintEvent(QPaintEvent *event)
-{
-    QPainter painter;
-    painter.begin(this);
-    painter.drawImage(0,0,*image,0,0);
-
-    painter.setBrush(QBrush(Qt::white, Qt::SolidPattern));
-    painter.setPen(QPen(Qt::blue,2,Qt::SolidLine));
-    painter.drawRect(image->width(),image->height(),7,7);
-
-    painter.end();
-}
+void ImageArea::setNumOfColor(int number){    numOfColor = number;}

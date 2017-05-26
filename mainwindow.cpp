@@ -30,6 +30,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->ellipse,SIGNAL(clicked()),psigMapperInstrument,SLOT(map()));
     psigMapperInstrument->setMapping(ui->zoom,ZOOM);
     QObject::connect(ui->zoom,SIGNAL(clicked()),psigMapperInstrument,SLOT(map()));
+    psigMapperInstrument->setMapping(ui->fill,FILL);
+    QObject::connect(ui->fill,SIGNAL(clicked()),psigMapperInstrument,SLOT(map()));
 
     //Установка толщины
     QObject::connect(ui->width,SIGNAL(valueChanged(int)),imageArea,SLOT(setWidth_(int)));

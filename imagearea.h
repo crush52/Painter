@@ -27,7 +27,6 @@ public:
 
     void resize(int w, int h, bool zoom);
 //    void move(const QPoint &);
-
     QImage* getPartOfImage();
     QImage* getImage();
     QImage* getImageCopy();
@@ -59,7 +58,7 @@ private:
     QString colorFirst,colorSecond;
     MainWindow* mainWindow;
     QSize realSize;
-    QPoint start,end,click;
+    QPoint start,end,click,dif;
     float scaledFactor;
     bool resizeFlag;
     int choosenInstr;
@@ -68,8 +67,8 @@ private:
     bool changeFlag;
     bool changeAfterFlag;
     bool moveObjectFlag;
-    bool resizeObjectFlag;
 
+    void moveObject(QPoint);
 protected:
     void paintEvent(QPaintEvent *event);
 

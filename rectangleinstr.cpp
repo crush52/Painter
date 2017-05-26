@@ -1,6 +1,5 @@
 #include "rectangleinstr.h"
 #include <QPainter>
-#include <iostream>
 
 RectangleInstr::RectangleInstr(QWidget *parent) : CommonInstr(parent)
 {
@@ -20,6 +19,7 @@ void RectangleInstr::mouseMove(QMouseEvent *me)
 
 void RectangleInstr::mouseRelease(QMouseEvent *me)
 {
+    if(start == end) return;
     imageArea->setChangeFlag(false);
     imageArea->setChangeAfterFlag(true);
 }

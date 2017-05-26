@@ -223,19 +223,6 @@ border-style: solid;
      <bool>false</bool>
     </property>
     <layout class="QGridLayout" name="gridLayout_2">
-     <item row="0" column="1">
-      <widget class="QToolButton" name="ellipse">
-       <property name="text">
-        <string>Ellipse</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="autoExclusive">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="0">
       <widget class="QToolButton" name="rectangle">
        <property name="text">
@@ -253,16 +240,36 @@ border-style: solid;
        </property>
       </widget>
      </item>
-     <item row="0" column="2">
-      <widget class="QToolButton" name="zoom">
+     <item row="0" column="1">
+      <widget class="QToolButton" name="ellipse">
        <property name="text">
-        <string>...</string>
+        <string>Ellipse</string>
        </property>
        <property name="checkable">
         <bool>true</bool>
        </property>
        <property name="autoExclusive">
         <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QToolButton" name="zoom">
+       <property name="text">
+        <string>Z</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="autoExclusive">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="3">
+      <widget class="QToolButton" name="fill">
+       <property name="text">
+        <string>F</string>
        </property>
       </widget>
      </item>
