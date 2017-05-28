@@ -64,8 +64,9 @@ void ImageArea::mousePressEvent(QMouseEvent *event)
     else if(changeAfterFlag &&
             QRect(QPoint(std::max(start.x(),end.x()),std::max(start.y(),end.y()))+QPoint(1,1),QSize(7,7)).contains(event->pos()))
     {
-        instruments[choosenInstr]->setStartPoint(QPoint(std::min(start.x(),end.x()),std::min(start.y(),end.y())));
         start = QPoint(std::min(start.x(),end.x()),std::min(start.y(),end.y()));
+        instruments[choosenInstr]->setStartPoint(start);
+        dif = QPoint(0,0);
         return;
     }
     else
@@ -108,6 +109,8 @@ void ImageArea::mouseMoveEvent(QMouseEvent *event)
     if(moveObjectFlag)
     {
         moveObject(event->pos());
+        instruments[choosenInstr]->setStartPoint(start);
+        instruments[choosenInstr]->setEndPoint(end);
         return;
     }
     /////////////////////////
@@ -121,6 +124,7 @@ void ImageArea::mouseMoveEvent(QMouseEvent *event)
         painter.drawImage(image->rect(),*part_of_image,part_of_image->rect());
         painter.end();
         end = instruments[choosenInstr]->getEndPoint();
+//        end = QPoint(std::max(start.x(),end.x()),std::max(start.y(),end.y()));
     }
 }
 
@@ -138,6 +142,11 @@ void ImageArea::mouseReleaseEvent(QMouseEvent *event)
         pen->setColor(colorSecond);
     }
     instruments[choosenInstr]->mouseRelease(event);
+//    QPoint tmp_st = QPoint(std::min(start.x(),end.x()),std::min(start.y(),end.y()));
+//    end = QPoint(std::max(start.x(),end.x()),std::max(start.y(),end.y()));
+//    start = tmp_st;
+//    instruments[choosenInstr]->setStartPoint(start);
+//    instruments[choosenInstr]->setEndPoint(end);
     this->update();
 }
 

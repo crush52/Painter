@@ -15,6 +15,6 @@ protected:
     void use();
 private:
     void recurse(int x,int y,QImage& image);
-    QColor newColor,oldColor;
+    QRgb newColor,oldColor;
 };
 #endif // FILLINSTR_H

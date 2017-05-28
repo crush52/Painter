@@ -271,6 +271,12 @@ border-style: solid;
        <property name="text">
         <string>F</string>
        </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="autoExclusive">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
     </layout>
