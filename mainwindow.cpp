@@ -32,6 +32,12 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->zoom,SIGNAL(clicked()),psigMapperInstrument,SLOT(map()));
     psigMapperInstrument->setMapping(ui->fill,FILL);
     QObject::connect(ui->fill,SIGNAL(clicked()),psigMapperInstrument,SLOT(map()));
+    psigMapperInstrument->setMapping(ui->lineInstr,LINE);
+    QObject::connect(ui->lineInstr,SIGNAL(clicked()),psigMapperInstrument,SLOT(map()));
+    psigMapperInstrument->setMapping(ui->pencil,PENCIL);
+    QObject::connect(ui->pencil,SIGNAL(clicked()),psigMapperInstrument,SLOT(map()));
+    psigMapperInstrument->setMapping(ui->brush,BRUSH);
+    QObject::connect(ui->brush,SIGNAL(clicked()),psigMapperInstrument,SLOT(map()));
 
     //Установка толщины
     QObject::connect(ui->width,SIGNAL(valueChanged(int)),imageArea,SLOT(setWidth_(int)));
@@ -51,6 +57,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->green,SIGNAL(clicked()),psigMapperColor,SLOT(map()));
     psigMapperColor->setMapping(ui->black,"black");
     QObject::connect(ui->black,SIGNAL(clicked()),psigMapperColor,SLOT(map()));
+    psigMapperColor->setMapping(ui->noColor,"transparent");
+    QObject::connect(ui->noColor,SIGNAL(clicked()),psigMapperColor,SLOT(map()));
 
     //Установка типа линии
 //    QSignalMapper* psigMapperStyle = new QSignalMapper();

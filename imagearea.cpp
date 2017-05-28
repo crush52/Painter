@@ -8,6 +8,9 @@
 #include "ellipseinstr.h"
 #include "zoominstr.h"
 #include "fillinstr.h"
+#include "lineinstr.h"
+#include "pencilinstr.h"
+#include "brushinstr.h"
 #include <QtDebug>
 #include <algorithm>
 
@@ -15,6 +18,7 @@
 ImageArea::ImageArea(QWidget *parent) : QWidget(parent)
 {
     this->setGeometry(QRect(initialPoint,QSize(600,400)));
+//    this->setMouseTracking(true);
     mainWindow = dynamic_cast<MainWindow*>(parent->parentWidget());
 
     image = new QImage(QSize(size().width()-10,size().height()-10),QImage::Format_ARGB32_Premultiplied);
@@ -42,6 +46,9 @@ ImageArea::ImageArea(QWidget *parent) : QWidget(parent)
     instruments[ELLIPSE] = new EllipseInstr(this);
     instruments[ZOOM] = new ZoomInstr(this);
     instruments[FILL] = new FillInstr(this);
+    instruments[LINE] = new LineInstr(this);
+    instruments[PENCIL] = new PencilInstr(this);
+    instruments[BRUSH] = new BrushInstr(this);
 }
 
 void ImageArea::mousePressEvent(QMouseEvent *event)
@@ -61,11 +68,18 @@ void ImageArea::mousePressEvent(QMouseEvent *event)
         click = event->pos();
         return;
     }
-    else if(changeAfterFlag &&
+    else if(changeAfterFlag && choosenInstr!= LINE &&
             QRect(QPoint(std::max(start.x(),end.x()),std::max(start.y(),end.y()))+QPoint(1,1),QSize(7,7)).contains(event->pos()))
     {
         start = QPoint(std::min(start.x(),end.x()),std::min(start.y(),end.y()));
+//        if(start.x() < 0 || start.y() < 0) start = QPoint(0,0);
         instruments[choosenInstr]->setStartPoint(start);
+        dif = QPoint(0,0);
+        return;
+    }
+    else if(changeAfterFlag && choosenInstr == LINE &&
+            QRect(end+QPoint(1,1),QSize(7,7)).contains(event->pos()))
+    {
         dif = QPoint(0,0);
         return;
     }
@@ -201,7 +215,11 @@ void ImageArea::paintEvent(QPaintEvent *event)
     painter.drawRect(image->width(),image->height(),7,7);
     if(changeAfterFlag)
     {
-        painter.drawRect(QRect(QPoint(std::max(start.x(),end.x()),std::max(start.y(),end.y()))+QPoint(1,1),QSize(7,7)));
+        if(choosenInstr != LINE)
+            painter.drawRect(QRect(QPoint(std::max(start.x(),end.x()),std::max(start.y(),end.y()))+QPoint(1,1),QSize(7,7)));
+        else
+            painter.drawRect(QRect(end+QPoint(1,1),QSize(7,7)));
+
         painter.setBrush(Qt::NoBrush);
         painter.setPen(QPen(Qt::blue,1,Qt::SolidLine));
         painter.drawRect(QRect(start,end));

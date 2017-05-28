@@ -31,7 +31,10 @@ SOURCES += main.cpp\
     commoninstr.cpp \
     ellipseinstr.cpp \
     zoominstr.cpp \
-    fillinstr.cpp
+    fillinstr.cpp \
+    lineinstr.cpp \
+    pencilinstr.cpp \
+    brushinstr.cpp
 
 #RESOURCES += stock_draw-rectangle-unfilled.png
 
@@ -42,7 +45,10 @@ HEADERS  += mainwindow.h \
     enuminstruments.h \
     ellipseinstr.h \
     zoominstr.h \
-    fillinstr.h
+    fillinstr.h \
+    lineinstr.h \
+    pencilinstr.h \
+    brushinstr.h
 
 FORMS    += mainwindow.ui
 
