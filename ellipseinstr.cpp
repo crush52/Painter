@@ -9,13 +9,13 @@ EllipseInstr::EllipseInstr(QWidget *parent) : CommonInstr(parent)
 
 void EllipseInstr::mousePress(QMouseEvent *me)
 {
-    start = end = me->pos();
+    start = end = me->pos()/imageArea->getScaledFactor();
 //    use();
 }
 
 void EllipseInstr::mouseMove(QMouseEvent *me)
 {
-    end = me->pos();
+    end = me->pos()/imageArea->getScaledFactor();
     use();
 }
 
@@ -31,7 +31,7 @@ void EllipseInstr::use()
     imageArea->setChangeFlag(true);
     *(imageArea->getImage()) = *(imageArea->getImageCopy());
     QPainter painter(imageArea->getPartOfImage());
-    painter.setRenderHint(QPainter::Antialiasing, true);
+//    painter.setRenderHint(QPainter::Antialiasing, true);
     painter.setPen(imageArea->getPen());
     painter.setBrush(imageArea->getBrush());
     painter.drawEllipse(QRect(start,end));

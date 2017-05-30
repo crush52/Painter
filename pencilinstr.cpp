@@ -9,12 +9,12 @@ PencilInstr::PencilInstr(QWidget *parent) : CommonInstr(parent)
 
 void PencilInstr::mousePress(QMouseEvent *me)
 {
-    start = end = me->pos();
+    start = end = me->pos()/imageArea->getScaledFactor();
 }
 
 void PencilInstr::mouseMove(QMouseEvent *me)
 {
-    end = me->pos();
+    end = me->pos()/imageArea->getScaledFactor();
     use();
     start = end;
 }
@@ -29,7 +29,7 @@ void PencilInstr::use()
 {
     imageArea->setChangeFlag(true);
     QPainter painter(imageArea->getPartOfImage());
-    painter.setRenderHint(QPainter::Antialiasing, true);
+//    painter.setRenderHint(QPainter::Antialiasing, true);
     painter.setPen(QPen(imageArea->getPen().color()));
 //    painter.setBrush(imageArea->getBrush());
     painter.drawLine(QLine(start,end));

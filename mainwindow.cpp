@@ -99,6 +99,7 @@ void MainWindow::paintEvent(QPaintEvent *event)
 void MainWindow::resizeEvent(QResizeEvent *re)
 {
     scrollArea->setGeometry(QRect(initialPoint,QPoint(size().width()-initialPoint.x(),size().height()-initialPoint.y())));
+//    imageArea->setGeometry(QRect(initialPoint,QPoint(size().width()-initialPoint.x()-7,size().height()-initialPoint.y()-7)));
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *me)

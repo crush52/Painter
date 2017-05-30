@@ -8,12 +8,12 @@ LineInstr::LineInstr(QWidget *parent) : CommonInstr(parent)
 
 void LineInstr::mousePress(QMouseEvent *me)
 {
-    start = end = me->pos();
+    start = end = me->pos()/imageArea->getScaledFactor();
 }
 
 void LineInstr::mouseMove(QMouseEvent *me)
 {
-    end = me->pos();
+    end = me->pos()/imageArea->getScaledFactor();
     use();
 }
 
@@ -29,7 +29,7 @@ void LineInstr::use()
     imageArea->setChangeFlag(true);
     *(imageArea->getImage()) = *(imageArea->getImageCopy());
     QPainter painter(imageArea->getPartOfImage());
-    painter.setRenderHint(QPainter::Antialiasing, true);
+//    painter.setRenderHint(QPainter::Antialiasing, true);
     painter.setPen(imageArea->getPen());
     painter.setBrush(imageArea->getBrush());
     painter.drawLine(QLine(start,end));

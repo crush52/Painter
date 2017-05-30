@@ -25,11 +25,12 @@ public:
     void mouseReleaseEvent(QMouseEvent *);
     void keyPressEvent(QKeyEvent *);
 
-    void resize(int w, int h, bool zoom);
+    void resize(int w, int h);
 //    void move(const QPoint &);
     QImage* getPartOfImage();
     QImage* getImage();
     QImage* getImageCopy();
+    QImage* getImageCopyForZoom();
     QPen getPen();
     QBrush getBrush();
     QSize getSize();
@@ -50,7 +51,7 @@ public slots:
     void setPenStyle_(int);
     void setNumOfColor(int);
 private:
-    QImage *image,*imageCopy,*part_of_image,*clearImage;
+    QImage *image,*imageCopy,*part_of_image,*clearImage,*imageCopyForZoom;
     QVector<CommonInstr*> instruments;
     QPen *pen;
     QBrush *brush;

@@ -26,14 +26,15 @@ void ZoomInstr::mouseRelease(QMouseEvent *)
 
 void ZoomInstr::use()
 {
-    if(imageArea->isLeftButtonClicked() && scaledFactor <= 8)
+    if(imageArea->isLeftButtonClicked() && scaledFactor <= 6)
         scaledFactor+=0.5;
     else if(!(imageArea->isLeftButtonClicked()) && scaledFactor > 0.5 )
         scaledFactor-=0.5;
     else return;
-    scaledSize=imageArea->getSize()*scaledFactor;
-    *(imageArea->getImage()) = imageArea->getImage()->scaled(scaledSize,Qt::KeepAspectRatio);
+    scaledSize=imageArea->getImage()->size()*scaledFactor;
+    *(imageArea->getImageCopyForZoom()) = imageArea->getImage()->scaled(scaledSize,Qt::KeepAspectRatio);
     imageArea->setScaledFactor(scaledFactor);
-    imageArea->resize(scaledSize.width(),scaledSize.height(),true);
+    imageArea->setGeometry(QRect(initialPoint,QSize(scaledSize.width()+10,scaledSize.height()+10)));
+//    imageArea->resize(scaledSize.width(),scaledSize.height(),true);
     imageArea->update();
 }

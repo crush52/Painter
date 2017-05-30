@@ -8,7 +8,7 @@ FillInstr::FillInstr(QWidget *parent) : CommonInstr(parent)
 
 void FillInstr::mousePress(QMouseEvent *me)
 {
-    start = end = me->pos();
+    start = end = me->pos()/imageArea->getScaledFactor();
     use();
 }
 
@@ -34,7 +34,7 @@ void FillInstr::recurse(int x, int y, QImage &image)
     int leftX = x-1, rightX = x;
     bool f1,f2;
     //Заивка текущей строки
-    while((f1 = (leftX>0 && image.pixel(leftX,y) == oldColor)) || (f2 = (rightX<image.width() && image.pixel(rightX,y) == oldColor)))
+    while((f1 = (leftX>=0 && image.pixel(leftX,y) == oldColor)) || (f2 = (rightX<image.width() && image.pixel(rightX,y) == oldColor)))
     {
         if(f1)
         {
@@ -50,7 +50,7 @@ void FillInstr::recurse(int x, int y, QImage &image)
     //Проверка вверхней строки
     for(int i = leftX+1; i<rightX;i++)
     {
-        if(y-1 > 0 && image.pixel(i,y-1) == oldColor)
+        if(y-1 >= 0 && image.pixel(i,y-1) == oldColor)
         {
             recurse(i,y-1,image);
         }
