@@ -11,6 +11,7 @@
 #include "lineinstr.h"
 #include "pencilinstr.h"
 #include "brushinstr.h"
+#include "cutinstr.h"
 #include <QtDebug>
 #include <algorithm>
 #include <cmath>
@@ -23,6 +24,7 @@ ImageArea::ImageArea(QWidget *parent) : QWidget(parent)
     image = new QImage(QSize(this->width()-10,this->height()-10),QImage::Format_ARGB32_Premultiplied);
 //    image->setDevicePixelRatio(2.0);
     image->fill(Qt::white);
+    headOfChanges = 0;
     pushChange();
     realSize = image->size();
     scaledFactor = 1;
@@ -40,7 +42,9 @@ ImageArea::ImageArea(QWidget *parent) : QWidget(parent)
     changeFlag = false;
     changeAfterFlag = false;
     moveObjectFlag = false;
+    isCut = false;
     dif = QPoint(0,0);
+    fileName.clear();
 
     instruments.resize(numOfInstr);
     instruments[RECT] = new RectangleInstr(this);
@@ -50,12 +54,11 @@ ImageArea::ImageArea(QWidget *parent) : QWidget(parent)
     instruments[LINE] = new LineInstr(this);
     instruments[PENCIL] = new PencilInstr(this);
     instruments[BRUSH] = new BrushInstr(this);
+    instruments[CUT] = new CutInstr(this);
 }
 
 void ImageArea::mousePressEvent(QMouseEvent *event)
 {
-    if(choosenInstr == BRUSH) redo();
-    if(choosenInstr == PENCIL) undo();
     if(QRect(QPoint(image->width()*scaledFactor,image->height()*scaledFactor),QSize(7,7)).contains(event->pos()))
     {
         resizeFlag = true;
@@ -72,10 +75,13 @@ void ImageArea::mousePressEvent(QMouseEvent *event)
         }
     else if(changeAfterFlag && QRect(start*scaledFactor,end*scaledFactor).contains(event->pos()))
     {
-        moveObjectFlag = true;
-        this->setCursor(Qt::OpenHandCursor);
-        click = event->pos()/scaledFactor;
-        return;
+        if(choosenInstr != CUT)
+        {
+            moveObjectFlag = true;
+            this->setCursor(Qt::OpenHandCursor);
+            click = event->pos()/scaledFactor;
+            return;
+        }
     }
     else if(changeAfterFlag && choosenInstr!= LINE &&
             QRect(QPoint(std::max(start.x(),end.x()),std::max(start.y(),end.y()))*scaledFactor+QPoint(1,1),QSize(7,7)).contains(event->pos()))
@@ -89,6 +95,7 @@ void ImageArea::mousePressEvent(QMouseEvent *event)
     else
     {
         changeAfterFlag = false;
+        isCut = false;
         this->update();
         dif = QPoint(0,0);
     }
@@ -99,7 +106,7 @@ void ImageArea::mousePressEvent(QMouseEvent *event)
         brush->setColor(colorSecond);
         pen->setColor(colorFirst);
     }
-    *imageCopy = *image;
+//    *imageCopy = *image;
 
     if(clearImage->size().width()!=image->size().width() || clearImage->size().height()!=image->size().height())
     {
@@ -135,16 +142,20 @@ void ImageArea::mouseMoveEvent(QMouseEvent *event)
     }
     /////////////////////////
 
-    *part_of_image = *clearImage;
+    if(!isCut) *part_of_image = *clearImage;
     instruments[choosenInstr]->mouseMove(event);
     if(changeFlag)
     {
         QPainter painter;
         painter.begin(image);
-        painter.drawImage(image->rect(),*part_of_image,part_of_image->rect());
+        if(isCut)
+            painter.drawImage(instruments[choosenInstr]->getStartPoint(),*part_of_image,part_of_image->rect());
+        else
+            painter.drawImage(image->rect(),*part_of_image,part_of_image->rect());
         painter.end();
         end = instruments[choosenInstr]->getEndPoint();
     }
+    this->update();
 }
 
 void ImageArea::mouseReleaseEvent(QMouseEvent *event)
@@ -171,7 +182,6 @@ void ImageArea::mouseReleaseEvent(QMouseEvent *event)
     }
     if(changeFlag)
         pushChange();
-
     instruments[choosenInstr]->mouseRelease(event);
     this->update();
 }
@@ -252,6 +262,12 @@ void ImageArea::paintEvent(QPaintEvent *event)
         painter.setPen(QPen(Qt::blue,1,Qt::DashLine));
         painter.drawRect(QRect(QPoint(0,0),end));
     }
+    if(isCut)
+    {
+        painter.setBrush(Qt::NoBrush);
+        painter.setPen(QPen(Qt::blue,1,Qt::DashLine));
+        painter.drawRect(QRect(instruments[choosenInstr]->getStartPoint(),instruments[choosenInstr]->getEndPoint()));
+    }
     painter.end();
 }
 
@@ -277,9 +293,14 @@ void ImageArea::setChangeFlag(bool flag){    changeFlag = flag;}
 
 void ImageArea::setChangeAfterFlag(bool flag){    changeAfterFlag = flag;}
 
+void ImageArea::setCut(bool flag){    isCut = flag;}
+
 bool ImageArea::isLeftButtonClicked(){    return isLeftButton;}
 
-void ImageArea::setInstrument(int choice){    choosenInstr = choice; changeAfterFlag = false; this->update();}
+void ImageArea::setInstrument(int choice){    //instruments[CUT]->setFlags(false);
+    choosenInstr = choice; changeAfterFlag = false;
+                                              isCut = false; this->update();
+                                         }
 
 void ImageArea::setWidth_(int width){    pen->setWidth(width);}
 
@@ -315,41 +336,48 @@ void ImageArea::setPenStyle_(int style){    pen->setStyle(Qt::PenStyle(style));}
 
 void ImageArea::setNumOfColor(int number){    numOfColor = number;}
 
+void ImageArea::saveFile()
+{
+    if(fileName.isEmpty()) saveAsFile();
+    else image->save(fileName);
+}
+
 void ImageArea::openFile()
 {
-    QString fileName  = QFileDialog::getOpenFileName(this,"Open Dialog","","*.png *.jpg *.bmp");
+    fileName  = QFileDialog::getOpenFileName(this,"Open Image","","*.png *.jpg *.bmp");
+    if(fileName.isEmpty()) return;
     image->load(fileName);
+    changes.clear();
+    headOfChanges = 0;
+    pushChange();
+    this->setGeometry(QRect(initialPoint,QSize(image->width()+10,image->height()+10)));
+    this->update();
+}
 
-//    QFileDialog *dialog = new QFileDialog;
-//    dialog->setDirectory("/home/dmitry/");
-//    dialog->setFileMode(QFileDialog::ExistingFile);
-//    dialog->setOptions(QFileDialog::DontUseSheet
-//                       | QFileDialog::DontUseCustomDirectoryIcons
-//                       | QFileDialog::ReadOnly
-//                       | QFileDialog::HideNameFilterDetails);
-//    dialog->open(this, SLOT(openFile(const QString&)));
+void ImageArea::saveAsFile()
+{
+    fileName = QFileDialog::getSaveFileName(0,tr("Save Image"),"Image.png","*.png ;; *.jpg ;; *.bmp");
+//    fileName = QFileDialog::getSaveFileName(this,tr("Save image"));
+    image->save(fileName);
 }
 
 void ImageArea::undo()
 {
+    changeAfterFlag = false;
     if(headOfChanges == 0)
         return;
     headOfChanges--;
     *image = changes[headOfChanges];
+    this->update();
     return;
 }
 
 void ImageArea::redo()
 {
+    changeAfterFlag = false;
     if(headOfChanges == changes.size()-1)
         return;
     *image = changes[++headOfChanges];
+    this->update();
     return;
-}
-
-void ImageArea::saveFile()
-{
-//    QString str = QFileDialog::getSaveFileName(0,tr("Save image"),"Image","*.png ;; *.jpg ;; *.bmp");
-    QString fileName = QFileDialog::getSaveFileName(this,tr("Save image"));
-    image->save(fileName);
 }

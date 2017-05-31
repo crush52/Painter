@@ -35,7 +35,8 @@ SOURCES += main.cpp\
     fillinstr.cpp \
     lineinstr.cpp \
     pencilinstr.cpp \
-    brushinstr.cpp
+    brushinstr.cpp \
+    cutinstr.cpp
 
 #RESOURCES += stock_draw-rectangle-unfilled.png
 
@@ -49,7 +50,8 @@ HEADERS  += mainwindow.h \
     fillinstr.h \
     lineinstr.h \
     pencilinstr.h \
-    brushinstr.h
+    brushinstr.h \
+    cutinstr.h
 
 FORMS    += mainwindow.ui
 

@@ -38,6 +38,7 @@ public:
     void setScaledFactor(float);
     void setChangeFlag(bool);
     void setChangeAfterFlag(bool);
+    void setCut(bool);
 
     bool isLeftButtonClicked();
 //    ~ImageArea();
@@ -50,6 +51,7 @@ public slots:
     void setPenStyle_(int);
     void setNumOfColor(int);
     void saveFile();
+    void saveAsFile();
     void openFile();
     void undo();
     void redo();
@@ -64,6 +66,7 @@ private:
     MainWindow* mainWindow;
     QSize realSize;
     QPoint start,end,click,dif;
+    QString fileName;
     float scaledFactor;
     bool resizeFlag;
     int choosenInstr;
@@ -72,6 +75,7 @@ private:
     bool changeFlag;
     bool changeAfterFlag;
     bool moveObjectFlag;
+    bool isCut;
     int headOfChanges;
 
     void moveObject(QPoint);

@@ -10,6 +10,8 @@ EllipseInstr::EllipseInstr(QWidget *parent) : CommonInstr(parent)
 void EllipseInstr::mousePress(QMouseEvent *me)
 {
     start = end = me->pos()/imageArea->getScaledFactor();
+    *(imageArea->getImageCopy()) = *(imageArea->getImage());
+
 //    use();
 }
 

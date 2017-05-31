@@ -9,6 +9,7 @@ RectangleInstr::RectangleInstr(QWidget *parent) : CommonInstr(parent)
 void RectangleInstr::mousePress(QMouseEvent *me)
 {
     start = end = me->pos()/imageArea->getScaledFactor();
+    *(imageArea->getImageCopy()) = *(imageArea->getImage());
 }
 
 void RectangleInstr::mouseMove(QMouseEvent *me)

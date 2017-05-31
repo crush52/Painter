@@ -7,6 +7,7 @@ BrushInstr::BrushInstr(QWidget *parent) : CommonInstr(parent)
 
 void BrushInstr::mousePress(QMouseEvent *me)
 {
+    *(imageArea->getImageCopy()) = *(imageArea->getImage());
 
 }
 

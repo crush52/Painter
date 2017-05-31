@@ -220,9 +220,9 @@ border-style: solid;
    <widget class="QGroupBox" name="groupBox_2">
     <property name="geometry">
      <rect>
-      <x>150</x>
+      <x>130</x>
       <y>0</y>
-      <width>201</width>
+      <width>221</width>
       <height>71</height>
      </rect>
     </property>
@@ -236,6 +236,19 @@ border-style: solid;
      <bool>false</bool>
     </property>
     <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="2">
+      <widget class="QToolButton" name="zoom">
+       <property name="text">
+        <string>Z</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="autoExclusive">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="0">
       <widget class="QToolButton" name="rectangle">
        <property name="text">
@@ -266,10 +279,10 @@ border-style: solid;
        </property>
       </widget>
      </item>
-     <item row="0" column="2">
-      <widget class="QToolButton" name="zoom">
+     <item row="0" column="5">
+      <widget class="QToolButton" name="pencil">
        <property name="text">
-        <string>Z</string>
+        <string>P</string>
        </property>
        <property name="checkable">
         <bool>true</bool>
@@ -292,6 +305,19 @@ border-style: solid;
        </property>
       </widget>
      </item>
+     <item row="0" column="6">
+      <widget class="QToolButton" name="brush">
+       <property name="text">
+        <string>B</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="autoExclusive">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="4">
       <widget class="QToolButton" name="lineInstr">
        <property name="text">
@@ -305,23 +331,10 @@ border-style: solid;
        </property>
       </widget>
      </item>
-     <item row="0" column="5">
-      <widget class="QToolButton" name="pencil">
+     <item row="0" column="7">
+      <widget class="QToolButton" name="cut">
        <property name="text">
-        <string>P</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="autoExclusive">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="6">
-      <widget class="QToolButton" name="brush">
-       <property name="text">
-        <string>B</string>
+        <string>C</string>
        </property>
        <property name="checkable">
         <bool>true</bool>
@@ -472,10 +485,6 @@ border-style: solid;
       <bool>true</bool>
      </property>
     </widget>
-    <zorder>colorSecond</zorder>
-    <zorder>colorFirst</zorder>
-    <zorder>colorFirstView</zorder>
-    <zorder>colorSecondView</zorder>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -484,19 +493,21 @@ border-style: solid;
      <x>0</x>
      <y>0</y>
      <width>818</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionNew"/>
-    <addaction name="actionOpen"/>
-    <addaction name="actionSave"/>
-    <addaction name="actionSave_As"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
    </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">

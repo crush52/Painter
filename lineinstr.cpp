@@ -9,6 +9,7 @@ LineInstr::LineInstr(QWidget *parent) : CommonInstr(parent)
 void LineInstr::mousePress(QMouseEvent *me)
 {
     start = end = me->pos()/imageArea->getScaledFactor();
+    *(imageArea->getImageCopy()) = *(imageArea->getImage());
 }
 
 void LineInstr::mouseMove(QMouseEvent *me)

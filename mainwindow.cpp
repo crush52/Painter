@@ -38,6 +38,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->pencil,SIGNAL(clicked()),psigMapperInstrument,SLOT(map()));
     psigMapperInstrument->setMapping(ui->brush,BRUSH);
     QObject::connect(ui->brush,SIGNAL(clicked()),psigMapperInstrument,SLOT(map()));
+    psigMapperInstrument->setMapping(ui->cut,CUT);
+    QObject::connect(ui->cut,SIGNAL(clicked()),psigMapperInstrument,SLOT(map()));
 
     //Установка толщины
     QObject::connect(ui->width,SIGNAL(valueChanged(int)),imageArea,SLOT(setWidth_(int)));
@@ -71,9 +73,16 @@ MainWindow::MainWindow(QWidget *parent) :
     psigMapperNumOfColor->setMapping(ui->colorSecond,2);
     QObject::connect(ui->colorSecond,SIGNAL(clicked()),psigMapperNumOfColor,SLOT(map()));
 
-    //
-    ui->menuFile->addAction("SAVE",imageArea,SLOT(saveFile()),QKeySequence("CTRL+S"));
-    ui->menuFile->addAction("OPEN...",imageArea,SLOT(openFile()),QKeySequence("CTRL+O"));
+    //Menu
+    //File
+    ui->menuFile->addAction("Open...",imageArea,SLOT(openFile()),QKeySequence("CTRL+O"));
+    ui->menuFile->addAction("Save",imageArea,SLOT(saveFile()),QKeySequence("CTRL+S"));
+    ui->menuFile->addAction("Save as...",imageArea,SLOT(saveAsFile()),QKeySequence("F12"));
+
+    //Edit
+    ui->menuEdit->addAction("Undo",imageArea,SLOT(undo()),QKeySequence("CTRL+Z"));
+    ui->menuEdit->addAction("Redo",imageArea,SLOT(redo()),QKeySequence("CTRL+Y"));
+
 
 //    ui->actionSave = new QAction(this);
 //    ui->actionSave->setShortcut(QKeySequence("CTRL+S"));
