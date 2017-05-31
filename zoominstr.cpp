@@ -34,6 +34,7 @@ void ZoomInstr::use()
     scaledSize=imageArea->getImage()->size()*scaledFactor;
     *(imageArea->getImageCopyForZoom()) = imageArea->getImage()->scaled(scaledSize,Qt::KeepAspectRatio);
     imageArea->setScaledFactor(scaledFactor);
+//    imageArea->getImage()->setDevicePixelRatio(scaledFactor);
     imageArea->setGeometry(QRect(initialPoint,QSize(scaledSize.width()+10,scaledSize.height()+10)));
 //    imageArea->resize(scaledSize.width(),scaledSize.height(),true);
     imageArea->update();

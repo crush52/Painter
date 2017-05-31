@@ -3,7 +3,7 @@
 #include <QPaintEvent>
 #include <QImage>
 #include <QBrush>
-#include <iostream>
+#include <QFileDialog>
 #include "rectangleinstr.h"
 #include "ellipseinstr.h"
 #include "zoominstr.h"
@@ -20,10 +20,10 @@ ImageArea::ImageArea(QWidget *parent) : QWidget(parent)
 {
     this->setGeometry(QRect(QPoint(0,0),QSize(600,400)));
     mainWindow = dynamic_cast<MainWindow*>(parent->parentWidget());
-
     image = new QImage(QSize(this->width()-10,this->height()-10),QImage::Format_ARGB32_Premultiplied);
 //    image->setDevicePixelRatio(2.0);
     image->fill(Qt::white);
+    pushChange();
     realSize = image->size();
     scaledFactor = 1;
     pen = new QPen(Qt::black,0,Qt::NoPen);
@@ -54,7 +54,8 @@ ImageArea::ImageArea(QWidget *parent) : QWidget(parent)
 
 void ImageArea::mousePressEvent(QMouseEvent *event)
 {
-    //
+    if(choosenInstr == BRUSH) redo();
+    if(choosenInstr == PENCIL) undo();
     if(QRect(QPoint(image->width()*scaledFactor,image->height()*scaledFactor),QSize(7,7)).contains(event->pos()))
     {
         resizeFlag = true;
@@ -72,7 +73,8 @@ void ImageArea::mousePressEvent(QMouseEvent *event)
     else if(changeAfterFlag && QRect(start*scaledFactor,end*scaledFactor).contains(event->pos()))
     {
         moveObjectFlag = true;
-        click = event->pos();
+        this->setCursor(Qt::OpenHandCursor);
+        click = event->pos()/scaledFactor;
         return;
     }
     else if(changeAfterFlag && choosenInstr!= LINE &&
@@ -103,15 +105,11 @@ void ImageArea::mousePressEvent(QMouseEvent *event)
     {
         delete clearImage;
         clearImage = new QImage(image->size(),QImage::Format_ARGB32_Premultiplied);
+        clearImage->fill(Qt::transparent);
     }
 
     instruments[choosenInstr]->mousePress(event);
     start = instruments[choosenInstr]->getStartPoint();
-//    qDebug() << start.x() << ' ' << start.y();
-//    start /= scaledFactor;
-//    instruments[choosenInstr]->setStartPoint(start);
-//    qDebug() << "NEW" << start.x() << ' ' << start.y();
-
 }
 
 void ImageArea::mouseMoveEvent(QMouseEvent *event)
@@ -121,7 +119,7 @@ void ImageArea::mouseMoveEvent(QMouseEvent *event)
         if(event->pos().x()>1 && event->pos().y()>1)// && fmod(event->pos().x(),scaledFactor) == 0 && fmod(event->pos().y(),scaledFactor) == 0)
         {
             end = event->pos();
-            this->setGeometry(QRect(QPoint(0,0),QSize(std::max(end.x(),image->width())+11,std::max(end.y(),image->height())+11)));
+            this->setGeometry(QRect(QPoint(0,0),QSize(std::max(end.x(),(int)(image->width()*scaledFactor))+11,std::max(end.y(),(int)(image->height()*scaledFactor))+11)));
             this->update();
             return;
         }
@@ -146,9 +144,6 @@ void ImageArea::mouseMoveEvent(QMouseEvent *event)
         painter.drawImage(image->rect(),*part_of_image,part_of_image->rect());
         painter.end();
         end = instruments[choosenInstr]->getEndPoint();
-//        end /= scaledFactor;
-//        instruments[choosenInstr]->setEndPoint(end);
-//        end = QPoint(std::max(start.x(),end.x()),std::max(start.y(),end.y()));
     }
 }
 
@@ -156,14 +151,17 @@ void ImageArea::mouseReleaseEvent(QMouseEvent *event)
 {
     if(resizeFlag)
     {
-        resize(event->pos().x(),event->pos().y());
+        resize(event->pos().x()/scaledFactor,event->pos().y()/scaledFactor);
         resizeFlag = false;
+        pushChange();
         this->update();
         return;
     }
     if(moveObjectFlag)
     {
         moveObjectFlag = false;
+        this->setCursor(Qt::ArrowCursor);
+        pushChange();
         return;
     }
     if(!isLeftButton)
@@ -171,23 +169,15 @@ void ImageArea::mouseReleaseEvent(QMouseEvent *event)
         brush->setColor(colorFirst);
         pen->setColor(colorSecond);
     }
+    if(changeFlag)
+        pushChange();
+
     instruments[choosenInstr]->mouseRelease(event);
     this->update();
 }
 
-void ImageArea::keyPressEvent(QKeyEvent *event)
-{
-    if(event->key() == Qt::Key_Z && event->modifiers() & Qt::ShiftModifier)
-    {
-//        *image = *imageCopy;
-        std::cout << "HI" << std::endl;
-    }
-}
-
 void ImageArea::resize(int w, int h)
 {
-//    qDebug() << w << ' ' << h;
-//    this->setGeometry(QRect(initialPoint,QSize(w+10,h+10)));
     w = (int)(w/scaledFactor)*scaledFactor;
     h = (int)(h/scaledFactor)*scaledFactor;
     QImage* imageCopy_ = new QImage(QSize(w,h),QImage::Format_ARGB32_Premultiplied);
@@ -213,6 +203,20 @@ void ImageArea::moveObject(QPoint mousePoint)
     click = mousePoint;
     this->update();
     return;
+}
+
+void ImageArea::pushChange()
+{
+    if(headOfChanges<changes.size()-1)
+    {
+        changes[++headOfChanges] = *image;
+        changes.resize(headOfChanges+1);
+        return;
+    }
+    if(changes.size()>100)
+        changes.pop_front();
+    changes.push_back(*image);
+    headOfChanges = changes.size()-1;
 }
 
 
@@ -310,3 +314,42 @@ void ImageArea::setColor_(QString color)
 void ImageArea::setPenStyle_(int style){    pen->setStyle(Qt::PenStyle(style));}
 
 void ImageArea::setNumOfColor(int number){    numOfColor = number;}
+
+void ImageArea::openFile()
+{
+    QString fileName  = QFileDialog::getOpenFileName(this,"Open Dialog","","*.png *.jpg *.bmp");
+    image->load(fileName);
+
+//    QFileDialog *dialog = new QFileDialog;
+//    dialog->setDirectory("/home/dmitry/");
+//    dialog->setFileMode(QFileDialog::ExistingFile);
+//    dialog->setOptions(QFileDialog::DontUseSheet
+//                       | QFileDialog::DontUseCustomDirectoryIcons
+//                       | QFileDialog::ReadOnly
+//                       | QFileDialog::HideNameFilterDetails);
+//    dialog->open(this, SLOT(openFile(const QString&)));
+}
+
+void ImageArea::undo()
+{
+    if(headOfChanges == 0)
+        return;
+    headOfChanges--;
+    *image = changes[headOfChanges];
+    return;
+}
+
+void ImageArea::redo()
+{
+    if(headOfChanges == changes.size()-1)
+        return;
+    *image = changes[++headOfChanges];
+    return;
+}
+
+void ImageArea::saveFile()
+{
+//    QString str = QFileDialog::getSaveFileName(0,tr("Save image"),"Image","*.png ;; *.jpg ;; *.bmp");
+    QString fileName = QFileDialog::getSaveFileName(this,tr("Save image"));
+    image->save(fileName);
+}

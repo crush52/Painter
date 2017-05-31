@@ -23,7 +23,6 @@ public:
     void mousePressEvent(QMouseEvent *);
     void mouseMoveEvent(QMouseEvent *);
     void mouseReleaseEvent(QMouseEvent *);
-    void keyPressEvent(QKeyEvent *);
 
     void resize(int w, int h);
 //    void move(const QPoint &);
@@ -50,9 +49,14 @@ public slots:
     void setColor_(QString);
     void setPenStyle_(int);
     void setNumOfColor(int);
+    void saveFile();
+    void openFile();
+    void undo();
+    void redo();
 private:
     QImage *image,*imageCopy,*part_of_image,*clearImage,*imageCopyForZoom;
     QVector<CommonInstr*> instruments;
+    QVector<QImage> changes;
     QPen *pen;
     QBrush *brush;
     QImage* imageColorFirst,*imageColorSecond;
@@ -68,8 +72,10 @@ private:
     bool changeFlag;
     bool changeAfterFlag;
     bool moveObjectFlag;
+    int headOfChanges;
 
     void moveObject(QPoint);
+    void pushChange();
 protected:
     void paintEvent(QPaintEvent *event);
 

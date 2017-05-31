@@ -18,10 +18,12 @@ void FillInstr::mouseMove(QMouseEvent *me)
 
 void FillInstr::mouseRelease(QMouseEvent *me)
 {
+    imageArea->setChangeFlag(false);
 }
 
 void FillInstr::use()
 {
+    imageArea->setChangeFlag(true);
     newColor = imageArea->getBrush().color().rgb();
     QImage& image = *(imageArea->getImage());
     oldColor = image.pixel(start);

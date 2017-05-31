@@ -71,6 +71,13 @@ MainWindow::MainWindow(QWidget *parent) :
     psigMapperNumOfColor->setMapping(ui->colorSecond,2);
     QObject::connect(ui->colorSecond,SIGNAL(clicked()),psigMapperNumOfColor,SLOT(map()));
 
+    //
+    ui->menuFile->addAction("SAVE",imageArea,SLOT(saveFile()),QKeySequence("CTRL+S"));
+    ui->menuFile->addAction("OPEN...",imageArea,SLOT(openFile()),QKeySequence("CTRL+O"));
+
+//    ui->actionSave = new QAction(this);
+//    ui->actionSave->setShortcut(QKeySequence("CTRL+S"));
+//    QObject::connect(ui->actionSave,SIGNAL(triggered()),imageArea,SLOT(save()));
 
     //Выбор начальных инструментов
     ui->rectangle->click();
@@ -99,7 +106,6 @@ void MainWindow::paintEvent(QPaintEvent *event)
 void MainWindow::resizeEvent(QResizeEvent *re)
 {
     scrollArea->setGeometry(QRect(initialPoint,QPoint(size().width()-initialPoint.x(),size().height()-initialPoint.y())));
-//    imageArea->setGeometry(QRect(initialPoint,QPoint(size().width()-initialPoint.x()-7,size().height()-initialPoint.y()-7)));
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *me)
@@ -109,7 +115,6 @@ void MainWindow::mousePressEvent(QMouseEvent *me)
 
 void MainWindow::mouseMoveEvent(QMouseEvent *me)
 {
-    std::cout << "HI" << std::endl;
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *me)

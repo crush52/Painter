@@ -5,9 +5,10 @@
 #-------------------------------------------------
 
 QT       += core gui
+QT       += widgets
 QMAKE_CXXFLAGS += -std=c++0x
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+#greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = painter
 TEMPLATE = app
