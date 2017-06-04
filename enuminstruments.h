@@ -1,8 +1,8 @@
 #ifndef ENUMINSTRUMENTS_H
 #define ENUMINSTRUMENTS_H
 #include <QPoint>
-const int numOfInstr = 8;
-const QPoint initialPoint(50,100);
+const int numOfInstr = 9;
+const QPoint initialPoint(50,120);
 enum instrumentsEnum {
     RECT,
     ELLIPSE,
@@ -11,7 +11,14 @@ enum instrumentsEnum {
     BRUSH,
     ZOOM,
     FILL,
-    CUT
+    CUT,
+    TEXT
 };
+
+//enum textEnum{
+//    BOLD,
+//    ITALIC,
+//    UNDERLINED
+//};
 
 #endif // ENUMINSTRUMENTS_H

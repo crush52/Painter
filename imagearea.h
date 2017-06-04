@@ -34,11 +34,12 @@ public:
     QBrush getBrush();
     QSize getSize();
     float getScaledFactor();
+    QFont getFont();
 
     void setScaledFactor(float);
     void setChangeFlag(bool);
     void setChangeAfterFlag(bool);
-    void setCut(bool);
+    void setSelect(bool);
 
     bool isLeftButtonClicked();
 //    ~ImageArea();
@@ -52,6 +53,10 @@ public slots:
     void setNumOfColor(int);
     void saveFile();
     void saveAsFile();
+//    void setFontFamily(QString);
+//    void setPointSize(int);
+//    void setTextStyle(int);
+//    void unsetTextStyle(int);
     void openFile();
     void undo();
     void redo();
@@ -75,7 +80,7 @@ private:
     bool changeFlag;
     bool changeAfterFlag;
     bool moveObjectFlag;
-    bool isCut;
+    bool isSelect;
     int headOfChanges;
 
     void moveObject(QPoint);

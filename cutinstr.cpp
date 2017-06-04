@@ -1,5 +1,6 @@
 #include "cutinstr.h"
 #include <QPainter>
+#include <algorithm>
 #include <QDebug>
 
 CutInstr::CutInstr(QWidget *parent) : CommonInstr(parent)
@@ -12,6 +13,9 @@ void CutInstr::mousePress(QMouseEvent *me)
 {
     if(isFirstClick)
     {
+        QPoint tmp = QPoint(std::min(start.x(),end.x()),std::min(start.y(),end.y()));
+        end = QPoint(std::max(start.x(),end.x()),std::max(start.y(),end.y()));
+        start = tmp;
         *(imageArea->getPartOfImage()) = imageArea->getImage()->copy(QRect(start,end));
         QPainter painter(imageArea->getImage());
         painter.fillRect(QRect(start,end),Qt::white);
@@ -21,7 +25,7 @@ void CutInstr::mousePress(QMouseEvent *me)
     }
     if(isAllocated)
     {
-        click = me->pos();
+        click = me->pos()/imageArea->getScaledFactor();
         return;
     }
     start = end = me->pos()/imageArea->getScaledFactor();
@@ -33,7 +37,8 @@ void CutInstr::mouseMove(QMouseEvent *me)
         use();
     else
     {
-        moveFragment(me->pos());
+        imageArea->setCursor(Qt::OpenHandCursor);
+        moveFragment(me->pos()/imageArea->getScaledFactor());
         return;
     }
     end = me->pos()/imageArea->getScaledFactor();
@@ -49,18 +54,18 @@ void CutInstr::mouseRelease(QMouseEvent *me)
         isFirstClick = true;
     }
     imageArea->setChangeFlag(false);
+    imageArea->setCursor(Qt::ArrowCursor);
 }
 
-void CutInstr::setFlags(bool)
+void CutInstr::setFlags(bool flag)
 {
-    isAllocated = false;
-    isFirstClick = false;
+    isAllocated = flag;
+    isFirstClick = flag;
 }
 
 void CutInstr::use()
 {
-    imageArea->setCut(true);
-    imageArea->setChangeAfterFlag(true);
+    imageArea->setSelect(true);
     imageArea->update();
 }
 

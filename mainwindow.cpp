@@ -40,6 +40,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->brush,SIGNAL(clicked()),psigMapperInstrument,SLOT(map()));
     psigMapperInstrument->setMapping(ui->cut,CUT);
     QObject::connect(ui->cut,SIGNAL(clicked()),psigMapperInstrument,SLOT(map()));
+    psigMapperInstrument->setMapping(ui->text,TEXT);
+    QObject::connect(ui->text,SIGNAL(clicked()),psigMapperInstrument,SLOT(map()));
+
 
     //Установка толщины
     QObject::connect(ui->width,SIGNAL(valueChanged(int)),imageArea,SLOT(setWidth_(int)));
@@ -72,6 +75,27 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->colorFirst,SIGNAL(clicked()),psigMapperNumOfColor,SLOT(map()));
     psigMapperNumOfColor->setMapping(ui->colorSecond,2);
     QObject::connect(ui->colorSecond,SIGNAL(clicked()),psigMapperNumOfColor,SLOT(map()));
+
+
+//    QObject::connect(ui->fontComboBox,SIGNAL(currentTextChanged(QString)),imageArea,SLOT(setFontFamily(QString)));
+//    QObject::connect(ui->textSize,SIGNAL(valueChanged(int)),imageArea,SLOT(setPointSize(int)));
+//    QSignalMapper* psigMapperStyle = new QSignalMapper();
+//    QObject::connect(psigMapperStyle,SIGNAL(mapped(int)),imageArea,SLOT(setTextStyle(int)));
+//    psigMapperStyle->setMapping(ui->bold,BOLD);
+//    QObject::connect(ui->bold,SIGNAL(pressed()),psigMapperStyle,SLOT(map()));
+//    psigMapperStyle->setMapping(ui->italic,ITALIC);
+//    QObject::connect(ui->italic,SIGNAL(pressed()),psigMapperStyle,SLOT(map()));
+//    psigMapperStyle->setMapping(ui->underline,UNDERLINED);
+//    QObject::connect(ui->underline,SIGNAL(pressed()),psigMapperStyle,SLOT(map()));
+
+//    QSignalMapper* psigMapperStyleUnset = new QSignalMapper();
+//    QObject::connect(psigMapperStyleUnset,SIGNAL(mapped(int)),imageArea,SLOT(unsetTextStyle(int)));
+//    psigMapperStyleUnset->setMapping(ui->bold,BOLD);
+//    QObject::connect(ui->bold,SIGNAL(released()),psigMapperStyle,SLOT(map()));
+//    psigMapperStyleUnset->setMapping(ui->italic,ITALIC);
+//    QObject::connect(ui->italic,SIGNAL(released()),psigMapperStyle,SLOT(map()));
+//    psigMapperStyleUnset->setMapping(ui->underline,UNDERLINED);
+//    QObject::connect(ui->underline,SIGNAL(released()),psigMapperStyle,SLOT(map()));
 
     //Menu
     //File
@@ -106,8 +130,8 @@ void MainWindow::paintEvent(QPaintEvent *event)
 {
     QPainter painter;
     painter.begin(this);
-    painter.drawImage(ui->colorFirstView->pos().x(),ui->colorFirstView->pos().y()+13,*imageColorFirst);
-    painter.drawImage(ui->colorSecondView->pos().x(),ui->colorSecondView->pos().y()+13,*imageColorSecond);
+    painter.drawImage(590,50,*imageColorFirst);
+    painter.drawImage(590,83,*imageColorSecond);
     painter.end();
     this->update();
 }
