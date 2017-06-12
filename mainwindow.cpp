@@ -42,6 +42,10 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->cut,SIGNAL(clicked()),psigMapperInstrument,SLOT(map()));
     psigMapperInstrument->setMapping(ui->text,TEXT);
     QObject::connect(ui->text,SIGNAL(clicked()),psigMapperInstrument,SLOT(map()));
+    psigMapperInstrument->setMapping(ui->pipette,PIPETTE);
+    QObject::connect(ui->pipette,SIGNAL(clicked()),psigMapperInstrument,SLOT(map()));
+    psigMapperInstrument->setMapping(ui->polygonalChain,POLYGONALCHAIN);
+    QObject::connect(ui->polygonalChain,SIGNAL(clicked()),psigMapperInstrument,SLOT(map()));
 
 
     //Установка толщины
@@ -64,9 +68,10 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->black,SIGNAL(clicked()),psigMapperColor,SLOT(map()));
     psigMapperColor->setMapping(ui->noColor,"transparent");
     QObject::connect(ui->noColor,SIGNAL(clicked()),psigMapperColor,SLOT(map()));
+    psigMapperColor->setMapping(ui->chooseColor,"openDialog");
+    QObject::connect(ui->chooseColor,SIGNAL(clicked(bool)),psigMapperColor,SLOT(map()));
 
     //Установка типа линии
-//    QSignalMapper* psigMapperStyle = new QSignalMapper();
     QObject::connect(ui->line,SIGNAL(currentIndexChanged(int)),imageArea,SLOT(setPenStyle_(int)));
 
     QSignalMapper* psigMapperNumOfColor = new QSignalMapper();
@@ -76,41 +81,26 @@ MainWindow::MainWindow(QWidget *parent) :
     psigMapperNumOfColor->setMapping(ui->colorSecond,2);
     QObject::connect(ui->colorSecond,SIGNAL(clicked()),psigMapperNumOfColor,SLOT(map()));
 
+    QObject::connect(ui->antialiasing,SIGNAL(toggled(bool)),imageArea,SLOT(setAntialiasing(bool)));
 
-//    QObject::connect(ui->fontComboBox,SIGNAL(currentTextChanged(QString)),imageArea,SLOT(setFontFamily(QString)));
-//    QObject::connect(ui->textSize,SIGNAL(valueChanged(int)),imageArea,SLOT(setPointSize(int)));
-//    QSignalMapper* psigMapperStyle = new QSignalMapper();
-//    QObject::connect(psigMapperStyle,SIGNAL(mapped(int)),imageArea,SLOT(setTextStyle(int)));
-//    psigMapperStyle->setMapping(ui->bold,BOLD);
-//    QObject::connect(ui->bold,SIGNAL(pressed()),psigMapperStyle,SLOT(map()));
-//    psigMapperStyle->setMapping(ui->italic,ITALIC);
-//    QObject::connect(ui->italic,SIGNAL(pressed()),psigMapperStyle,SLOT(map()));
-//    psigMapperStyle->setMapping(ui->underline,UNDERLINED);
-//    QObject::connect(ui->underline,SIGNAL(pressed()),psigMapperStyle,SLOT(map()));
-
-//    QSignalMapper* psigMapperStyleUnset = new QSignalMapper();
-//    QObject::connect(psigMapperStyleUnset,SIGNAL(mapped(int)),imageArea,SLOT(unsetTextStyle(int)));
-//    psigMapperStyleUnset->setMapping(ui->bold,BOLD);
-//    QObject::connect(ui->bold,SIGNAL(released()),psigMapperStyle,SLOT(map()));
-//    psigMapperStyleUnset->setMapping(ui->italic,ITALIC);
-//    QObject::connect(ui->italic,SIGNAL(released()),psigMapperStyle,SLOT(map()));
-//    psigMapperStyleUnset->setMapping(ui->underline,UNDERLINED);
-//    QObject::connect(ui->underline,SIGNAL(released()),psigMapperStyle,SLOT(map()));
+    //Установка типа кисти
+//    QObject::connect(ui->brushStyle,SIGNAL(activated(QString)),imageArea,SLOT());
 
     //Menu
     //File
+    ui->menuFile->addAction("New",imageArea,SLOT(newFile()),QKeySequence("CTRL+N"));
     ui->menuFile->addAction("Open...",imageArea,SLOT(openFile()),QKeySequence("CTRL+O"));
     ui->menuFile->addAction("Save",imageArea,SLOT(saveFile()),QKeySequence("CTRL+S"));
-    ui->menuFile->addAction("Save as...",imageArea,SLOT(saveAsFile()),QKeySequence("F12"));
+    ui->menuFile->addAction("Save as...",imageArea,SLOT(saveAsFile()),QKeySequence("CTRL+SHIFT+S"));
 
     //Edit
+    ui->menuEdit->addAction("Copy",imageArea,SLOT(copy()),QKeySequence("CTRL+C"));
+    ui->menuEdit->addAction("Paste",imageArea,SLOT(paste()),QKeySequence("CTRL+V"));
+    ui->menuEdit->addAction("Cut",imageArea,SLOT(cut()),QKeySequence("CTRL+X"));
+    ui->menuEdit->addAction("Delete",imageArea,SLOT(deleteObj()),QKeySequence("DEL"));
+    ui->menuEdit->addSeparator();
     ui->menuEdit->addAction("Undo",imageArea,SLOT(undo()),QKeySequence("CTRL+Z"));
     ui->menuEdit->addAction("Redo",imageArea,SLOT(redo()),QKeySequence("CTRL+Y"));
-
-
-//    ui->actionSave = new QAction(this);
-//    ui->actionSave->setShortcut(QKeySequence("CTRL+S"));
-//    QObject::connect(ui->actionSave,SIGNAL(triggered()),imageArea,SLOT(save()));
 
     //Выбор начальных инструментов
     ui->rectangle->click();
@@ -118,6 +108,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->black->click();
     ui->colorFirst->click();
     ui->white->click();
+    ui->line->setCurrentText("SolidLine");
 }
 
 void MainWindow::setColorWidget(QImage* imageColorFirst,QImage* imageColorSecond)
@@ -130,8 +121,8 @@ void MainWindow::paintEvent(QPaintEvent *event)
 {
     QPainter painter;
     painter.begin(this);
-    painter.drawImage(590,50,*imageColorFirst);
-    painter.drawImage(590,83,*imageColorSecond);
+    painter.drawImage(590,47,*imageColorFirst);
+    painter.drawImage(590,80,*imageColorSecond);
     painter.end();
     this->update();
 }

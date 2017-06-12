@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Icons/crop-tool.png</file>
+        <file>Icons/eyedropper.png</file>
+        <file>Icons/magnifier.png</file>
+        <file>Icons/paintbox.png</file>
+        <file>Icons/paragraph-text.png</file>
+        <file>Icons/pencil-ruler.png</file>
+        <file>Icons/scissor.png</file>
+        <file>Icons/shapes.png</file>
+        <file>Icons/painting-roller.png</file>
+    </qresource>
+</RCC>

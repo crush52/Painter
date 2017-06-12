@@ -29,9 +29,8 @@ void PencilInstr::use()
 {
     imageArea->setChangeFlag(true);
     QPainter painter(imageArea->getPartOfImage());
-//    painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.setRenderHint(QPainter::Antialiasing,imageArea->isAntialiasing());
     painter.setPen(QPen(imageArea->getPen().color()));
-//    painter.setBrush(imageArea->getBrush());
     painter.drawLine(QLine(start,end));
     painter.end();
     imageArea->update();

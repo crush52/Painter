@@ -22,8 +22,8 @@
      <rect>
       <x>620</x>
       <y>0</y>
-      <width>165</width>
-      <height>101</height>
+      <width>141</width>
+      <height>71</height>
      </rect>
     </property>
     <property name="title">
@@ -47,13 +47,13 @@ border-style: solid;
           <string>r</string>
          </property>
          <property name="checkable">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <property name="checked">
           <bool>false</bool>
          </property>
          <property name="autoExclusive">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonIconOnly</enum>
@@ -72,13 +72,13 @@ border-style: solid;
           <string>g</string>
          </property>
          <property name="checkable">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <property name="checked">
           <bool>false</bool>
          </property>
          <property name="autoExclusive">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonIconOnly</enum>
@@ -97,13 +97,13 @@ border-style: solid;
           <string>b</string>
          </property>
          <property name="checkable">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <property name="checked">
           <bool>false</bool>
          </property>
          <property name="autoExclusive">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonIconOnly</enum>
@@ -122,13 +122,13 @@ border-style: solid;
           <string>w</string>
          </property>
          <property name="checkable">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <property name="checked">
           <bool>false</bool>
          </property>
          <property name="autoExclusive">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonIconOnly</enum>
@@ -147,13 +147,13 @@ border-style: solid;
           <string>y</string>
          </property>
          <property name="checkable">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <property name="checked">
           <bool>false</bool>
          </property>
          <property name="autoExclusive">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonIconOnly</enum>
@@ -175,13 +175,13 @@ border-style: solid;
           <string/>
          </property>
          <property name="checkable">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <property name="checked">
           <bool>false</bool>
          </property>
          <property name="autoExclusive">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <property name="toolButtonStyle">
           <enum>Qt::ToolButtonIconOnly</enum>
@@ -196,10 +196,10 @@ border-style: solid;
         <string>No color</string>
        </property>
        <property name="checkable">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
        <property name="autoExclusive">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -208,10 +208,10 @@ border-style: solid;
    <widget class="QGroupBox" name="groupBox_2">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>0</y>
-      <width>253</width>
-      <height>68</height>
+      <x>170</x>
+      <y>10</y>
+      <width>71</width>
+      <height>61</height>
      </rect>
     </property>
     <property name="title">
@@ -224,10 +224,14 @@ border-style: solid;
      <bool>false</bool>
     </property>
     <layout class="QGridLayout" name="gridLayout_2">
-     <item row="0" column="2">
-      <widget class="QToolButton" name="zoom">
+     <item row="0" column="0">
+      <widget class="QToolButton" name="rectangle">
        <property name="text">
-        <string>Z</string>
+        <string>R</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normaloff>stock_draw-rectangle-unfilled.png</normaloff>stock_draw-rectangle-unfilled.png</iconset>
        </property>
        <property name="checkable">
         <bool>true</bool>
@@ -237,14 +241,10 @@ border-style: solid;
        </property>
       </widget>
      </item>
-     <item row="0" column="0">
-      <widget class="QToolButton" name="rectangle">
+     <item row="0" column="2">
+      <widget class="QToolButton" name="lineInstr">
        <property name="text">
-        <string>R</string>
-       </property>
-       <property name="icon">
-        <iconset>
-         <normaloff>stock_draw-rectangle-unfilled.png</normaloff>stock_draw-rectangle-unfilled.png</iconset>
+        <string>L</string>
        </property>
        <property name="checkable">
         <bool>true</bool>
@@ -267,75 +267,10 @@ border-style: solid;
        </property>
       </widget>
      </item>
-     <item row="0" column="5">
-      <widget class="QToolButton" name="pencil">
+     <item row="2" column="1">
+      <widget class="QToolButton" name="polygonalChain">
        <property name="text">
-        <string>P</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="autoExclusive">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="3">
-      <widget class="QToolButton" name="fill">
-       <property name="text">
-        <string>F</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="autoExclusive">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="6">
-      <widget class="QToolButton" name="brush">
-       <property name="text">
-        <string>B</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="autoExclusive">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="4">
-      <widget class="QToolButton" name="lineInstr">
-       <property name="text">
-        <string>L</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="autoExclusive">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="7">
-      <widget class="QToolButton" name="cut">
-       <property name="text">
-        <string>C</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
-       </property>
-       <property name="autoExclusive">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="8">
-      <widget class="QToolButton" name="text">
-       <property name="text">
-        <string>T</string>
+        <string>PolCh</string>
        </property>
        <property name="checkable">
         <bool>true</bool>
@@ -347,186 +282,13 @@ border-style: solid;
      </item>
     </layout>
    </widget>
-   <widget class="QTabWidget" name="tabWidget">
-    <property name="geometry">
-     <rect>
-      <x>300</x>
-      <y>0</y>
-      <width>191</width>
-      <height>101</height>
-     </rect>
-    </property>
-    <property name="currentIndex">
-     <number>0</number>
-    </property>
-    <widget class="QWidget" name="tab">
-     <attribute name="title">
-      <string>Line</string>
-     </attribute>
-     <widget class="QLabel" name="label">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>10</y>
-        <width>51</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Width</string>
-      </property>
-      <property name="buddy">
-       <cstring>width</cstring>
-      </property>
-     </widget>
-     <widget class="QSpinBox" name="width">
-      <property name="geometry">
-       <rect>
-        <x>80</x>
-        <y>10</y>
-        <width>41</width>
-        <height>21</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QLabel" name="label_2">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>40</y>
-        <width>71</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Line Style</string>
-      </property>
-      <property name="buddy">
-       <cstring>line</cstring>
-      </property>
-     </widget>
-     <widget class="QComboBox" name="line">
-      <property name="geometry">
-       <rect>
-        <x>82</x>
-        <y>40</y>
-        <width>91</width>
-        <height>21</height>
-       </rect>
-      </property>
-      <item>
-       <property name="text">
-        <string>NoLine</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>SolidLine</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>DashLine</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>DotLine</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>DashDotLine</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>DashDotDotLine</string>
-       </property>
-      </item>
-     </widget>
-    </widget>
-    <widget class="QWidget" name="tab_2">
-     <attribute name="title">
-      <string>Text</string>
-     </attribute>
-     <widget class="QFontComboBox" name="fontComboBox">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>181</width>
-        <height>25</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QSpinBox" name="textSize">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>30</y>
-        <width>48</width>
-        <height>26</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QToolButton" name="italic">
-      <property name="geometry">
-       <rect>
-        <x>50</x>
-        <y>30</y>
-        <width>26</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>...</string>
-      </property>
-      <property name="checkable">
-       <bool>true</bool>
-      </property>
-     </widget>
-     <widget class="QToolButton" name="underline">
-      <property name="geometry">
-       <rect>
-        <x>80</x>
-        <y>30</y>
-        <width>26</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>...</string>
-      </property>
-      <property name="checkable">
-       <bool>true</bool>
-      </property>
-     </widget>
-     <widget class="QToolButton" name="bold">
-      <property name="geometry">
-       <rect>
-        <x>110</x>
-        <y>30</y>
-        <width>26</width>
-        <height>24</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>...</string>
-      </property>
-      <property name="checkable">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </widget>
-   </widget>
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>500</x>
-      <y>30</y>
+      <y>10</y>
       <width>121</width>
-      <height>62</height>
+      <height>61</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -572,6 +334,353 @@ border-style: solid;
      </item>
     </layout>
    </widget>
+   <widget class="QSpinBox" name="width">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>10</y>
+      <width>41</width>
+      <height>21</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>40</y>
+      <width>71</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Line Style</string>
+    </property>
+    <property name="buddy">
+     <cstring>line</cstring>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="line">
+    <property name="geometry">
+     <rect>
+      <x>402</x>
+      <y>40</y>
+      <width>91</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>NoLine</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>SolidLine</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>DashLine</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>DotLine</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>DashDotLine</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>DashDotDotLine</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>10</y>
+      <width>51</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Width</string>
+    </property>
+    <property name="buddy">
+     <cstring>width</cstring>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="chooseColor">
+    <property name="geometry">
+     <rect>
+      <x>760</x>
+      <y>10</y>
+      <width>51</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Choose
+color...</string>
+    </property>
+   </widget>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>380</y>
+      <width>128</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <item>
+      <widget class="QToolButton" name="brush">
+       <property name="text">
+        <string>B</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="autoExclusive">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="brushStyle">
+       <item>
+        <property name="text">
+         <string>Standard</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Сalligraphy №1</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Сalligraphy №2</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Sprey</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QCheckBox" name="antialiasing">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>10</y>
+      <width>81</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Antialiasing</string>
+    </property>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_3">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>161</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Instruments</string>
+    </property>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="1">
+      <widget class="QToolButton" name="zoom">
+       <property name="minimumSize">
+        <size>
+         <width>31</width>
+         <height>31</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">#zoom {
+background-color: transparent;
+border-image: url(:/Icons/magnifier.png);
+background: none;
+border: none;
+background-repeat: none;
+}
+</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="autoExclusive">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QToolButton" name="fill">
+       <property name="minimumSize">
+        <size>
+         <width>31</width>
+         <height>31</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">#fill {
+background-color: transparent;
+border-image: url(:/Icons/painting-roller.png);
+background: none;
+border: none;
+background-repeat: none;
+}
+</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="autoExclusive">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QToolButton" name="cut">
+       <property name="minimumSize">
+        <size>
+         <width>31</width>
+         <height>31</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">#cut {
+background-color: transparent;
+border-image: url(:/Icons/scissor.png);
+background: none;
+border: none;
+background-repeat: none;
+}
+</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="autoExclusive">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QToolButton" name="pencil">
+       <property name="minimumSize">
+        <size>
+         <width>31</width>
+         <height>31</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">#pencil {
+background-color: transparent;
+border-image: url(:/Icons/pencil-ruler.png);
+background: none;
+border: none;
+background-repeat: none;
+}
+</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="autoExclusive">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QToolButton" name="text">
+       <property name="minimumSize">
+        <size>
+         <width>31</width>
+         <height>31</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">#text {
+background-color: transparent;
+border-image: url(:/Icons/paragraph-text.png);
+background: none;
+border: none;
+background-repeat: none;
+}
+</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="autoExclusive">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QToolButton" name="pipette">
+       <property name="minimumSize">
+        <size>
+         <width>31</width>
+         <height>31</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">#pipette {
+background-color: transparent;
+border-image: url(:/Icons/eyedropper.png);
+background: none;
+border: none;
+background-repeat: none;
+}
+</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="autoExclusive">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -579,7 +688,7 @@ border-style: solid;
      <x>0</x>
      <y>0</y>
      <width>818</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

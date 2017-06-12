@@ -11,6 +11,7 @@ public:
     void mouseMove(QMouseEvent *);
     void mouseRelease(QMouseEvent*);
     void setFlags(bool);
+    void setFirstClick(bool);
 signals:
 
 public slots:

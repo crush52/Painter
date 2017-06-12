@@ -8,8 +8,6 @@ QT       += core gui
 QT       += widgets
 QMAKE_CXXFLAGS += -std=c++0x
 
-#greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
 TARGET = painter
 TEMPLATE = app
 
@@ -38,9 +36,9 @@ SOURCES += main.cpp\
     brushinstr.cpp \
     cutinstr.cpp \
     textinstr.cpp \
-    textdialog.cpp
-
-#RESOURCES += stock_draw-rectangle-unfilled.png
+    textdialog.cpp \
+    pipetteinstr.cpp \
+    polygonalchaininstr.cpp
 
 HEADERS  += mainwindow.h \
     imagearea.h \
@@ -55,9 +53,11 @@ HEADERS  += mainwindow.h \
     brushinstr.h \
     cutinstr.h \
     textinstr.h \
-    textdialog.h
+    textdialog.h \
+    pipetteinstr.h \
+    polygonalchaininstr.h
 
-FORMS    += mainwindow.ui \
-    textdialog.ui
+FORMS    += mainwindow.ui
 
-RESOURCES +=
+RESOURCES += \
+    icons.qrc

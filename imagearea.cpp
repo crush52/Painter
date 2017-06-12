@@ -4,6 +4,7 @@
 #include <QImage>
 #include <QBrush>
 #include <QFileDialog>
+#include <QColorDialog>
 #include "rectangleinstr.h"
 #include "ellipseinstr.h"
 #include "zoominstr.h"
@@ -13,7 +14,11 @@
 #include "brushinstr.h"
 #include "cutinstr.h"
 #include "textinstr.h"
+#include "pipetteinstr.h"
+#include "polygonalchaininstr.h"
 #include <QtDebug>
+#include <QApplication>
+#include <QClipboard>
 #include <algorithm>
 #include <cmath>
 
@@ -31,10 +36,6 @@ ImageArea::ImageArea(QWidget *parent) : QWidget(parent)
     pen = new QPen(Qt::black,0,Qt::NoPen);
     brush = new QBrush(Qt::white, Qt::SolidPattern);
 
-    //SET FONT
-//    setFontFamily("Ubuntu");
-//    setPointSize(1);
-
     imageColorFirst = new QImage(QSize(21,21),QImage::Format_ARGB32_Premultiplied);
     imageColorSecond = new QImage(QSize(21,21),QImage::Format_ARGB32_Premultiplied);
 
@@ -48,6 +49,8 @@ ImageArea::ImageArea(QWidget *parent) : QWidget(parent)
     changeAfterFlag = false;
     moveObjectFlag = false;
     isSelect = false;
+    antialiasing = false;
+    isPasted = false;
     dif = QPoint(0,0);
     fileName.clear();
 
@@ -61,6 +64,8 @@ ImageArea::ImageArea(QWidget *parent) : QWidget(parent)
     instruments[BRUSH] = new BrushInstr(this);
     instruments[CUT] = new CutInstr(this);
     instruments[TEXT] = new TextInstr(this);
+    instruments[PIPETTE] = new PipetteInstr(this);
+    instruments[POLYGONALCHAIN] = new PolygonalChainInstr(this);
 }
 
 void ImageArea::mousePressEvent(QMouseEvent *event)
@@ -73,7 +78,12 @@ void ImageArea::mousePressEvent(QMouseEvent *event)
         return;
     }
     //
-    if(isSelect && QRect(start*scaledFactor,end*scaledFactor).contains(event->pos()))
+    if(isPasted && QRect(QPoint(std::max(start.x(),end.x()),std::max(start.y(),end.y()))*scaledFactor+QPoint(1,1),QSize(7,7)).contains(event->pos()))
+    {
+        resizeFlag = true;
+        return;
+    }
+    else if(isSelect && QRect(start*scaledFactor,end*scaledFactor).contains(event->pos()))
     {
         instruments[choosenInstr]->mousePress(event);
         start = instruments[choosenInstr]->getStartPoint();
@@ -82,6 +92,7 @@ void ImageArea::mousePressEvent(QMouseEvent *event)
     else
     {
         isSelect = false;
+        isPasted = false;
         dynamic_cast<CutInstr*>(instruments[CUT])->setFlags(false);
         this->update();
     }
@@ -108,6 +119,7 @@ void ImageArea::mousePressEvent(QMouseEvent *event)
     }
     else
     {
+        dynamic_cast<TextInstr*>(instruments[TEXT])->setFlags(false);
         changeAfterFlag = false;
         dif = QPoint(0,0);
     }
@@ -118,7 +130,6 @@ void ImageArea::mousePressEvent(QMouseEvent *event)
         brush->setColor(colorSecond);
         pen->setColor(colorFirst);
     }
-//    *imageCopy = *image;
 
     if(clearImage->size().width()!=image->size().width() || clearImage->size().height()!=image->size().height())
     {
@@ -133,9 +144,19 @@ void ImageArea::mousePressEvent(QMouseEvent *event)
 
 void ImageArea::mouseMoveEvent(QMouseEvent *event)
 {
-    if(resizeFlag)
+    if(resizeFlag && isPasted)
     {
-        if(event->pos().x()>1 && event->pos().y()>1)// && fmod(event->pos().x(),scaledFactor) == 0 && fmod(event->pos().y(),scaledFactor) == 0)
+        if(event->pos().x()>1 && event->pos().y()>1)
+        {
+            end = event->pos()/scaledFactor;
+            instruments[choosenInstr]->setEndPoint(end);
+            this->update();
+        }
+        return;
+    }
+    else if(resizeFlag)
+    {
+        if(event->pos().x()>1 && event->pos().y()>1)
         {
             end = event->pos();
             this->setGeometry(QRect(QPoint(0,0),QSize(std::max(end.x(),(int)(image->width()*scaledFactor))+11,std::max(end.y(),(int)(image->height()*scaledFactor))+11)));
@@ -144,6 +165,8 @@ void ImageArea::mouseMoveEvent(QMouseEvent *event)
         }
         else return;
     }
+    else resizeFlag = false;
+
     /////////////////////////
     if(moveObjectFlag)
     {
@@ -154,7 +177,8 @@ void ImageArea::mouseMoveEvent(QMouseEvent *event)
     }
     /////////////////////////
 
-    if(!isSelect) *part_of_image = *clearImage;
+    if(!isSelect)
+        *part_of_image = *clearImage;
     instruments[choosenInstr]->mouseMove(event);
     end = instruments[choosenInstr]->getEndPoint();
     start = instruments[choosenInstr]->getStartPoint();
@@ -173,13 +197,22 @@ void ImageArea::mouseMoveEvent(QMouseEvent *event)
 
 void ImageArea::mouseReleaseEvent(QMouseEvent *event)
 {
-    if(resizeFlag)
+    if(resizeFlag && !isPasted)
     {
         resize(event->pos().x()/scaledFactor,event->pos().y()/scaledFactor);
         resizeFlag = false;
         pushChange();
         this->update();
         return;
+    }
+    else if(resizeFlag && isPasted)
+    {
+        *image = *imageCopy;
+        QPainter painter(image);
+        painter.drawImage(instruments[choosenInstr]->getStartPoint(),part_of_image->scaled(QSize((end-start).x(),(end-start).y()),Qt::IgnoreAspectRatio));
+        painter.end();
+        resizeFlag = false;
+        this->update();
     }
     if(moveObjectFlag)
     {
@@ -258,7 +291,7 @@ void ImageArea::paintEvent(QPaintEvent *event)
     painter.setBrush(QBrush(Qt::white, Qt::SolidPattern));
     painter.setPen(QPen(Qt::blue,2,Qt::SolidLine));
     painter.drawRect(image->width()*scaledFactor,image->height()*scaledFactor,7,7);
-    if(changeAfterFlag)
+    if(changeAfterFlag || isPasted)
     {
         if(choosenInstr != LINE)
             painter.drawRect(QRect(QPoint(std::max(start.x(),end.x()),std::max(start.y(),end.y()))*scaledFactor+QPoint(1,1),QSize(7,7)));
@@ -273,7 +306,8 @@ void ImageArea::paintEvent(QPaintEvent *event)
     {
         painter.setBrush(Qt::NoBrush);
         painter.setPen(QPen(Qt::blue,1,Qt::DashLine));
-        painter.drawRect(QRect(QPoint(0,0),end));
+        if(!isPasted)
+            painter.drawRect(QRect(QPoint(0,0),end));
     }
     if(isSelect)
     {
@@ -301,7 +335,7 @@ QSize ImageArea::getSize(){    return realSize;}
 
 float ImageArea::getScaledFactor(){    return scaledFactor;}
 
-//QFont ImageArea::getFont(){    return font;}
+bool ImageArea::isAntialiasing(){    return antialiasing;}
 
 void ImageArea::setScaledFactor(float scaledFactor){    this->scaledFactor = scaledFactor;}
 
@@ -315,15 +349,25 @@ bool ImageArea::isLeftButtonClicked(){    return isLeftButton;}
 
 void ImageArea::setInstrument(int choice)
 {
+    dynamic_cast<TextInstr*>(instruments[TEXT])->setFlags(false);
     dynamic_cast<CutInstr*>(instruments[CUT])->setFlags(false);
-    choosenInstr = choice; changeAfterFlag = false;
-    isSelect = false; this->update();
+    choosenInstr = choice;
+    changeAfterFlag = false;
+    isSelect = false;
+    isPasted = false;
+    this->update();
 }
 
 void ImageArea::setWidth_(int width){    pen->setWidth(width);}
 
 void ImageArea::setColor_(QString color)
 {
+    if(color == "openDialog")
+    {
+        QColor tmpColor = QColorDialog::getColor();
+        if(!tmpColor.isValid()) return;
+        else color = tmpColor.name();
+    }
     if(numOfColor == 1)
     {
         brush->setColor(QColor(color));
@@ -336,23 +380,42 @@ void ImageArea::setColor_(QString color)
     }
     QPainter painter;
     painter.begin(imageColorFirst);
-    painter.setRenderHint(QPainter::Antialiasing, true);
-    painter.setPen(QPen(Qt::black,4,Qt::SolidLine));
-    painter.setBrush(QBrush(QColor(colorFirst), Qt::SolidPattern));
-    painter.drawRect(QRect(QPoint(0,0),QPoint(21,21)));
+    if(colorFirst == "transparent")
+    {
+        painter.setPen(QPen(Qt::black,4,Qt::SolidLine));
+        painter.setBrush(QBrush(Qt::white, Qt::SolidPattern));
+        painter.drawRect(QRect(QPoint(0,0),QPoint(21,21)));
+        painter.drawText(QRect(QPoint(0,0),QPoint(21,21)),Qt::AlignCenter,"NC");
+    }
+    else
+    {
+        painter.setPen(QPen(Qt::black,4,Qt::SolidLine));
+        painter.setBrush(QBrush(QColor(colorFirst), Qt::SolidPattern));
+        painter.drawRect(QRect(QPoint(0,0),QPoint(21,21)));
+    }
     painter.end();
     painter.begin(imageColorSecond);
-    painter.setRenderHint(QPainter::Antialiasing, true);
-    painter.setPen(QPen(Qt::black,4,Qt::SolidLine));
-    painter.setBrush(QBrush(QColor(colorSecond), Qt::SolidPattern));
-    painter.drawRect(QRect(QPoint(0,0),QPoint(21,21)));
-    painter.end();
+    if(colorSecond == "transparent")
+    {
+        painter.setPen(QPen(Qt::black,4,Qt::SolidLine));
+        painter.setBrush(QBrush(Qt::white, Qt::SolidPattern));
+        painter.drawRect(QRect(QPoint(0,0),QPoint(21,21)));
+        painter.drawText(QRect(QPoint(0,0),QPoint(21,21)),Qt::AlignCenter,"NC");
+    }
+    else
+    {
+        painter.setPen(QPen(Qt::black,4,Qt::SolidLine));
+        painter.setBrush(QBrush(QColor(colorSecond), Qt::SolidPattern));
+        painter.drawRect(QRect(QPoint(0,0),QPoint(21,21)));
+    }
     mainWindow->setColorWidget(imageColorFirst,imageColorSecond);
 }
 
 void ImageArea::setPenStyle_(int style){    pen->setStyle(Qt::PenStyle(style));}
 
 void ImageArea::setNumOfColor(int number){    numOfColor = number;}
+
+void ImageArea::setAntialiasing(bool value){    antialiasing = value;}
 
 void ImageArea::saveFile()
 {
@@ -378,48 +441,6 @@ void ImageArea::saveAsFile()
     image->save(fileName);
 }
 
-//void ImageArea::setFontFamily(QString family)
-//{
-//    font.setFamily(family);
-//}
-
-//void ImageArea::setPointSize(int size)
-//{
-//    font.setPointSize(size);
-//}
-
-//void ImageArea::setTextStyle(int style)
-//{
-//    switch(style)
-//    {
-//    case BOLD:
-//        font.setBold(true);
-//        break;
-//    case ITALIC:
-//        font.setItalic(true);
-//        break;
-//    case UNDERLINED:
-//        font.setUnderline(true);
-//        break;
-//    }
-//}
-
-//void ImageArea::unsetTextStyle(int style)
-//{
-//    switch(style)
-//    {
-//    case BOLD:
-//        font.setBold(false);
-//        break;
-//    case ITALIC:
-//        font.setItalic(false);
-//        break;
-//    case UNDERLINED:
-//        font.setUnderline(false);
-//        break;
-//    }
-//}
-
 void ImageArea::undo()
 {
     changeAfterFlag = false;
@@ -439,4 +460,63 @@ void ImageArea::redo()
     *image = changes[++headOfChanges];
     this->update();
     return;
+}
+
+void ImageArea::copy()
+{
+    if(isSelect)
+    {
+        QClipboard* cb = QApplication::clipboard();
+        cb->setImage(*part_of_image);
+    }
+}
+
+void ImageArea::paste()
+{
+    QClipboard* cb = QApplication::clipboard();
+    QImage* pastedImage = new QImage(cb->image());
+    if(!pastedImage->isNull())
+    {
+        dynamic_cast<TextInstr*>(instruments[TEXT])->setFlags(false);
+        isSelect = false;
+        this->update();
+        setInstrument(CUT);
+        isSelect = true;
+        isPasted = true;
+        *part_of_image = *pastedImage;
+        start = QPoint(0,0);
+        end = QPoint(part_of_image->width()-1,part_of_image->height()-1);
+        instruments[choosenInstr]->setStartPoint(start);
+        instruments[choosenInstr]->setEndPoint(end);
+        dynamic_cast<CutInstr*>(instruments[CUT])->setFlags(true);
+        dynamic_cast<CutInstr*>(instruments[CUT])->setFirstClick(false);
+        *imageCopy = *image;
+        QPainter painter;
+        painter.begin(image);
+        painter.drawImage(start,*part_of_image,part_of_image->rect());
+        painter.end();
+        pushChange();
+    }
+}
+
+void ImageArea::cut()
+{
+    copy();
+    deleteObj();
+}
+
+void ImageArea::deleteObj()
+{
+    if(isSelect)
+    {
+        dynamic_cast<CutInstr*>(instruments[CUT])->setFlags(false);
+        isSelect = false;
+        QPainter painter;
+        painter.begin(image);
+        painter.fillRect(QRect(start,end),Qt::white);
+        painter.end();
+        *part_of_image = *clearImage;
+        this->update();
+        pushChange();
+    }
 }

@@ -30,7 +30,7 @@ void LineInstr::use()
     imageArea->setChangeFlag(true);
     *(imageArea->getImage()) = *(imageArea->getImageCopy());
     QPainter painter(imageArea->getPartOfImage());
-//    painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.setRenderHint(QPainter::Antialiasing,imageArea->isAntialiasing());
     painter.setPen(imageArea->getPen());
     painter.setBrush(imageArea->getBrush());
     painter.drawLine(QLine(start,end));

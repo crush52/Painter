@@ -12,6 +12,7 @@ public:
     void mouseMove(QMouseEvent *);
     void mouseRelease(QMouseEvent*);
     void setText(QString);
+    void setFlags(bool);
 signals:
 
 public slots:
@@ -19,7 +20,8 @@ public slots:
 protected:
     void use();
 private:
-    void createTextEdit();
+    bool isAllocated;
+    QPoint click;
     TextDialog* textDialog;
     QString text;
 

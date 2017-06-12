@@ -11,8 +11,6 @@ void EllipseInstr::mousePress(QMouseEvent *me)
 {
     start = end = me->pos()/imageArea->getScaledFactor();
     *(imageArea->getImageCopy()) = *(imageArea->getImage());
-
-//    use();
 }
 
 void EllipseInstr::mouseMove(QMouseEvent *me)
@@ -33,7 +31,7 @@ void EllipseInstr::use()
     imageArea->setChangeFlag(true);
     *(imageArea->getImage()) = *(imageArea->getImageCopy());
     QPainter painter(imageArea->getPartOfImage());
-//    painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.setRenderHint(QPainter::Antialiasing,imageArea->isAntialiasing());
     painter.setPen(imageArea->getPen());
     painter.setBrush(imageArea->getBrush());
     painter.drawEllipse(QRect(start,end));

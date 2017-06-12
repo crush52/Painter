@@ -25,7 +25,6 @@ public:
     void mouseReleaseEvent(QMouseEvent *);
 
     void resize(int w, int h);
-//    void move(const QPoint &);
     QImage* getPartOfImage();
     QImage* getImage();
     QImage* getImageCopy();
@@ -34,7 +33,7 @@ public:
     QBrush getBrush();
     QSize getSize();
     float getScaledFactor();
-    QFont getFont();
+    bool isAntialiasing();
 
     void setScaledFactor(float);
     void setChangeFlag(bool);
@@ -51,15 +50,16 @@ public slots:
     void setColor_(QString);
     void setPenStyle_(int);
     void setNumOfColor(int);
+    void setAntialiasing(bool);
     void saveFile();
     void saveAsFile();
-//    void setFontFamily(QString);
-//    void setPointSize(int);
-//    void setTextStyle(int);
-//    void unsetTextStyle(int);
     void openFile();
     void undo();
     void redo();
+    void copy();
+    void paste();
+    void cut();
+    void deleteObj();
 private:
     QImage *image,*imageCopy,*part_of_image,*clearImage,*imageCopyForZoom;
     QVector<CommonInstr*> instruments;
@@ -81,6 +81,8 @@ private:
     bool changeAfterFlag;
     bool moveObjectFlag;
     bool isSelect;
+    bool isPasted;
+    bool antialiasing;
     int headOfChanges;
 
     void moveObject(QPoint);

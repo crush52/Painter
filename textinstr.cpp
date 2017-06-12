@@ -7,59 +7,75 @@
 TextInstr::TextInstr(QWidget *parent) : CommonInstr(parent)
 {
     imageArea = dynamic_cast<ImageArea*>(parent);
+    textDialog = new TextDialog(this);
 }
 
 void TextInstr::mousePress(QMouseEvent *me)
 {
-    text.clear();
-    start = end = me->pos()/imageArea->getScaledFactor();
-//    *(imageArea->getImageCopy()) = *(imageArea->getImage());
+    if(isAllocated)
+        return;
+    else
+    {
+        *(imageArea->getImageCopy()) = *(imageArea->getImage());
+        start = end = me->pos()/imageArea->getScaledFactor();
+    }
 }
 
 void TextInstr::mouseMove(QMouseEvent *me)
 {
+    if(!isAllocated)
+        use();
     end = me->pos()/imageArea->getScaledFactor();
-    use();
 }
 
 void TextInstr::mouseRelease(QMouseEvent *me)
 {
     if(start == end) return;
+    if(!isAllocated)
+    {
+        text.clear();
+        textDialog->setInitialText(text);
+        textDialog->show();
+        isAllocated = true;
+    }
+    else
+    {
+        textDialog->setInitialText(text);
+        setText(text);
+        imageArea->update();
+    }
     imageArea->setChangeFlag(false);
     imageArea->setChangeAfterFlag(true);
-    createTextEdit();
+    imageArea->setSelect(false);
+    imageArea->setCursor(Qt::ArrowCursor);
 }
 
 void TextInstr::use()
 {
     imageArea->setSelect(true);
+    imageArea->setChangeFlag(true);
     imageArea->update();
-}
-
-void TextInstr::createTextEdit()
-{
-    textDialog = new TextDialog(this);
-    textDialog->show();
 }
 
 void TextInstr::setText(QString text)
 {
-//    imageArea->setChangeFlag(true);
-//    *(imageArea->getImage()) = *(imageArea->getImageCopy());
-//    QPainter painter(imageArea->getPartOfImage());
-////    painter.setRenderHint(QPainter::Antialiasing, true);
-//    painter.setPen(imageArea->getPen());
-//    painter.setBrush(imageArea->getBrush());
-//    painter.drawRect(QRect(start,end));
-//    painter.end();
-//    imageArea->update();
     this->text = text;
-    imageArea->setChangeFlag(true);
-//    *(imageArea->getImage()) = *(imageArea->getImageCopy());
-    QPainter painter(imageArea->getImage());
+    *(imageArea->getImage()) = *(imageArea->getImageCopy());
+    imageArea->getPartOfImage()->fill(Qt::transparent);
+    QPainter painter(imageArea->getPartOfImage());
+    painter.setRenderHint(QPainter::Antialiasing,imageArea->isAntialiasing());
     painter.setFont(textDialog->getFont());
+    painter.setPen(imageArea->getPen().color());
     painter.drawText(QRect(start,end),text);
     painter.end();
+    painter.begin(imageArea->getImage());
+    painter.drawImage(0,0,*(imageArea->getPartOfImage()));
+    painter.end();
     imageArea->update();
+}
+
+void TextInstr::setFlags(bool flag)
+{
+    isAllocated = flag;
 }
 

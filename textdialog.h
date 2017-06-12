@@ -18,12 +18,12 @@ public:
     ~TextDialog();
 
 private:
-//    Ui::TextDialog *ui;
     QTextEdit* textEdit;
     QFont font;
 public slots:
     void setFont();
     void setText();
+    void setInitialText(QString);
 };
 
 #endif // TEXTDIALOG_H

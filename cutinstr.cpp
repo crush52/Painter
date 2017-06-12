@@ -13,10 +13,6 @@ void CutInstr::mousePress(QMouseEvent *me)
 {
     if(isFirstClick)
     {
-        QPoint tmp = QPoint(std::min(start.x(),end.x()),std::min(start.y(),end.y()));
-        end = QPoint(std::max(start.x(),end.x()),std::max(start.y(),end.y()));
-        start = tmp;
-        *(imageArea->getPartOfImage()) = imageArea->getImage()->copy(QRect(start,end));
         QPainter painter(imageArea->getImage());
         painter.fillRect(QRect(start,end),Qt::white);
         painter.end();
@@ -53,6 +49,13 @@ void CutInstr::mouseRelease(QMouseEvent *me)
         isAllocated = true;
         isFirstClick = true;
     }
+    if(isFirstClick)
+    {
+        QPoint tmp = QPoint(std::min(start.x(),end.x()),std::min(start.y(),end.y()));
+        end = QPoint(std::max(start.x(),end.x()),std::max(start.y(),end.y()));
+        start = tmp;
+        *(imageArea->getPartOfImage()) = imageArea->getImage()->copy(QRect(start,end));
+    }
     imageArea->setChangeFlag(false);
     imageArea->setCursor(Qt::ArrowCursor);
 }
@@ -60,6 +63,11 @@ void CutInstr::mouseRelease(QMouseEvent *me)
 void CutInstr::setFlags(bool flag)
 {
     isAllocated = flag;
+    isFirstClick = flag;
+}
+
+void CutInstr::setFirstClick(bool flag)
+{
     isFirstClick = flag;
 }
 
@@ -71,15 +79,10 @@ void CutInstr::use()
 
 void CutInstr::moveFragment(QPoint mousePoint)
 {
-//    QPainter painter(imageArea->getImage());
     imageArea->setChangeFlag(true);
     *(imageArea->getImage()) = *(imageArea->getImageCopy());
     start = start + mousePoint - click;
     end = end + mousePoint - click;
-//    qDebug() << imageArea->getPartOfImage()->width() << ' ' << imageArea->getPartOfImage()->height();
-//    painter.drawImage(start,*(imageArea->getPartOfImage()),imageArea->getPartOfImage()->rect());
-//    painter.end();
     click = mousePoint;
-//    this->update();
     return;
 }
