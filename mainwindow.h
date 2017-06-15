@@ -5,6 +5,7 @@
 #include "enuminstruments.h"
 #include <QScrollArea>
 #include "imagearea.h"
+#include <QLabel>
 class ImageArea;
 
 namespace Ui {
@@ -18,15 +19,14 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     void setColorWidget(QImage*,QImage*);
+    void setScale(int);
     void paintEvent(QPaintEvent*);
     void resizeEvent(QResizeEvent*);
-    void mousePressEvent(QMouseEvent*);
-    void mouseMoveEvent(QMouseEvent *);
-    void mouseReleaseEvent(QMouseEvent*);
     ~MainWindow();
 
 private:
     Ui::MainWindow *ui;
+    QLabel* scaledFactor;
     QString colorFirst,colorSecond;
     QImage* imageColorFirst,*imageColorSecond;
     QScrollArea* scrollArea;

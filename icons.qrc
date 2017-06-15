@@ -9,5 +9,9 @@
         <file>Icons/scissor.png</file>
         <file>Icons/shapes.png</file>
         <file>Icons/painting-roller.png</file>
+        <file>Icons/ellipse.png</file>
+        <file>Icons/line.png</file>
+        <file>Icons/polygonal-chain.png</file>
+        <file>Icons/rectangle.png</file>
     </qresource>
 </RCC>

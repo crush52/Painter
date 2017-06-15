@@ -11,6 +11,7 @@ TextDialog::TextDialog(QWidget *parent) :
     this->setGeometry(50,50,200,200);
     textEdit = new QTextEdit(this);
     textEdit->setGeometry(QRect(10,10,180,150));
+    this->setWindowTitle(QString("Text"));
     QPushButton* setFont = new QPushButton(this);
     setFont->setGeometry(QRect(10,170,70,22));
     setFont->setText("Set Font...");

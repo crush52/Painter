@@ -39,6 +39,7 @@ public:
     void setChangeFlag(bool);
     void setChangeAfterFlag(bool);
     void setSelect(bool);
+    void pushChange();
 
     bool isLeftButtonClicked();
 //    ~ImageArea();
@@ -51,6 +52,7 @@ public slots:
     void setPenStyle_(int);
     void setNumOfColor(int);
     void setAntialiasing(bool);
+    void setSize();
     void saveFile();
     void saveAsFile();
     void openFile();
@@ -60,8 +62,9 @@ public slots:
     void paste();
     void cut();
     void deleteObj();
+    void newFile();
 private:
-    QImage *image,*imageCopy,*part_of_image,*clearImage,*imageCopyForZoom;
+    QImage *image,*imageCopy,*part_of_image,*clearImage,*imageCopyForZoom,*pastedImage;
     QVector<CommonInstr*> instruments;
     QVector<QImage> changes;
     QPen *pen;
@@ -86,7 +89,7 @@ private:
     int headOfChanges;
 
     void moveObject(QPoint);
-    void pushChange();
+    void disableSelections();
 protected:
     void paintEvent(QPaintEvent *event);
 

@@ -11,11 +11,11 @@
 #include "fillinstr.h"
 #include "lineinstr.h"
 #include "pencilinstr.h"
-#include "brushinstr.h"
 #include "cutinstr.h"
 #include "textinstr.h"
 #include "pipetteinstr.h"
 #include "polygonalchaininstr.h"
+#include "resizedialog.h"
 #include <QtDebug>
 #include <QApplication>
 #include <QClipboard>
@@ -25,7 +25,7 @@
 
 ImageArea::ImageArea(QWidget *parent) : QWidget(parent)
 {
-    this->setGeometry(QRect(QPoint(0,0),QSize(600,400)));
+    this->setGeometry(QRect(QPoint(0,0),QSize(610,410)));
     mainWindow = dynamic_cast<MainWindow*>(parent->parentWidget());
     image = new QImage(QSize(this->width()-10,this->height()-10),QImage::Format_ARGB32_Premultiplied);
     image->fill(Qt::white);
@@ -43,6 +43,7 @@ ImageArea::ImageArea(QWidget *parent) : QWidget(parent)
     clearImage = new QImage(image->size(),QImage::Format_ARGB32_Premultiplied);
     part_of_image = new QImage(image->size(),QImage::Format_ARGB32_Premultiplied);
     imageCopyForZoom = new QImage(image->size(),QImage::Format_ARGB32_Premultiplied);
+    pastedImage = new QImage(image->size(),QImage::Format_ARGB32_Premultiplied);
 
     resizeFlag = false;
     changeFlag = false;
@@ -61,7 +62,6 @@ ImageArea::ImageArea(QWidget *parent) : QWidget(parent)
     instruments[FILL] = new FillInstr(this);
     instruments[LINE] = new LineInstr(this);
     instruments[PENCIL] = new PencilInstr(this);
-    instruments[BRUSH] = new BrushInstr(this);
     instruments[CUT] = new CutInstr(this);
     instruments[TEXT] = new TextInstr(this);
     instruments[PIPETTE] = new PipetteInstr(this);
@@ -123,7 +123,6 @@ void ImageArea::mousePressEvent(QMouseEvent *event)
         changeAfterFlag = false;
         dif = QPoint(0,0);
     }
-
     isLeftButton = (event->button() == Qt::LeftButton);
     if(!isLeftButton)
     {
@@ -208,8 +207,9 @@ void ImageArea::mouseReleaseEvent(QMouseEvent *event)
     else if(resizeFlag && isPasted)
     {
         *image = *imageCopy;
+        *part_of_image = pastedImage->scaled(QSize((end-start).x(),(end-start).y()),Qt::IgnoreAspectRatio);
         QPainter painter(image);
-        painter.drawImage(instruments[choosenInstr]->getStartPoint(),part_of_image->scaled(QSize((end-start).x(),(end-start).y()),Qt::IgnoreAspectRatio));
+        painter.drawImage(instruments[choosenInstr]->getStartPoint(),*part_of_image);
         painter.end();
         resizeFlag = false;
         this->update();
@@ -275,6 +275,15 @@ void ImageArea::pushChange()
     headOfChanges = changes.size()-1;
 }
 
+void ImageArea::disableSelections()
+{
+    dynamic_cast<TextInstr*>(instruments[TEXT])->setFlags(false);
+    dynamic_cast<CutInstr*>(instruments[CUT])->setFlags(false);
+    changeAfterFlag = false;
+    isSelect = false;
+    isPasted = false;
+}
+
 
 void ImageArea::paintEvent(QPaintEvent *event)
 {
@@ -337,7 +346,11 @@ float ImageArea::getScaledFactor(){    return scaledFactor;}
 
 bool ImageArea::isAntialiasing(){    return antialiasing;}
 
-void ImageArea::setScaledFactor(float scaledFactor){    this->scaledFactor = scaledFactor;}
+void ImageArea::setScaledFactor(float scaledFactor)
+{
+    this->scaledFactor = scaledFactor;
+    mainWindow->setScale((int)(scaledFactor*100));
+}
 
 void ImageArea::setChangeFlag(bool flag){    changeFlag = flag;}
 
@@ -349,12 +362,8 @@ bool ImageArea::isLeftButtonClicked(){    return isLeftButton;}
 
 void ImageArea::setInstrument(int choice)
 {
-    dynamic_cast<TextInstr*>(instruments[TEXT])->setFlags(false);
-    dynamic_cast<CutInstr*>(instruments[CUT])->setFlags(false);
     choosenInstr = choice;
-    changeAfterFlag = false;
-    isSelect = false;
-    isPasted = false;
+    disableSelections();
     this->update();
 }
 
@@ -417,6 +426,13 @@ void ImageArea::setNumOfColor(int number){    numOfColor = number;}
 
 void ImageArea::setAntialiasing(bool value){    antialiasing = value;}
 
+void ImageArea::setSize()
+{
+    ResizeDialog* dialog = new ResizeDialog(this);
+    dialog->setSize(image->width(),image->height());
+    dialog->show();
+}
+
 void ImageArea::saveFile()
 {
     if(fileName.isEmpty()) saveAsFile();
@@ -448,6 +464,7 @@ void ImageArea::undo()
         return;
     headOfChanges--;
     *image = changes[headOfChanges];
+    this->setGeometry(QRect(QPoint(0,0),QSize(image->width()+11,image->height()+11)));
     this->update();
     return;
 }
@@ -458,6 +475,7 @@ void ImageArea::redo()
     if(headOfChanges == changes.size()-1)
         return;
     *image = changes[++headOfChanges];
+    this->setGeometry(QRect(QPoint(0,0),QSize(image->width()+11,image->height()+11)));
     this->update();
     return;
 }
@@ -474,7 +492,7 @@ void ImageArea::copy()
 void ImageArea::paste()
 {
     QClipboard* cb = QApplication::clipboard();
-    QImage* pastedImage = new QImage(cb->image());
+    *pastedImage = cb->image();
     if(!pastedImage->isNull())
     {
         dynamic_cast<TextInstr*>(instruments[TEXT])->setFlags(false);
@@ -507,16 +525,24 @@ void ImageArea::cut()
 
 void ImageArea::deleteObj()
 {
-    if(isSelect)
+    if(isSelect || changeAfterFlag)
     {
-        dynamic_cast<CutInstr*>(instruments[CUT])->setFlags(false);
-        isSelect = false;
-        QPainter painter;
-        painter.begin(image);
-        painter.fillRect(QRect(start,end),Qt::white);
-        painter.end();
+        disableSelections();
+        *image = *imageCopy;
         *part_of_image = *clearImage;
         this->update();
         pushChange();
     }
+}
+
+void ImageArea::newFile()
+{
+    delete image;
+    image = new QImage(QSize(600,400),QImage::Format_ARGB32_Premultiplied);
+    image->fill(Qt::white);
+    disableSelections();
+    headOfChanges = 0;
+    changes.clear();
+    pushChange();
+    this->update();
 }

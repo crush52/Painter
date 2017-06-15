@@ -10,14 +10,29 @@ PolygonalChainInstr::PolygonalChainInstr(QWidget *parent) : CommonInstr(parent)
 
 void PolygonalChainInstr::mousePress(QMouseEvent *me)
 {
-    if(!imageArea->isLeftButtonClicked())
+    if(me->button() == Qt::RightButton)
     {
         stopDraw = true;
         imageArea->setMouseTracking(false);
         *(imageArea->getImage()) = *(imageArea->getImageCopy());
     }
+    if(me->button() == Qt::MiddleButton)
+    {
+        end = firstPoint;
+        *(imageArea->getPartOfImage()) = *(imageArea->getImage());
+        imageArea->getPartOfImage()->fill(Qt::transparent);
+        use();
+        QPainter painter;
+        painter.begin(imageArea->getImage());
+        painter.drawImage(imageArea->getImage()->rect(),*imageArea->getPartOfImage(),imageArea->getPartOfImage()->rect());
+        painter.end();
+        start = firstPoint;
+        *(imageArea->getImageCopy()) = *(imageArea->getImage());
+        return;
+    }
     if(isFirstClick)
     {
+        firstPoint = me->pos()/imageArea->getScaledFactor();
         start = end = me->pos()/imageArea->getScaledFactor();
         isFirstClick = false;
         stopDraw = false;

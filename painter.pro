@@ -33,12 +33,12 @@ SOURCES += main.cpp\
     fillinstr.cpp \
     lineinstr.cpp \
     pencilinstr.cpp \
-    brushinstr.cpp \
     cutinstr.cpp \
     textinstr.cpp \
     textdialog.cpp \
     pipetteinstr.cpp \
-    polygonalchaininstr.cpp
+    polygonalchaininstr.cpp \
+    resizedialog.cpp
 
 HEADERS  += mainwindow.h \
     imagearea.h \
@@ -50,14 +50,15 @@ HEADERS  += mainwindow.h \
     fillinstr.h \
     lineinstr.h \
     pencilinstr.h \
-    brushinstr.h \
     cutinstr.h \
     textinstr.h \
     textdialog.h \
     pipetteinstr.h \
-    polygonalchaininstr.h
+    polygonalchaininstr.h \
+    resizedialog.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    resizedialog.ui
 
 RESOURCES += \
     icons.qrc

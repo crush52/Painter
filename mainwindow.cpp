@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     this->setGeometry(QRect(50,50,900,500));
     scrollArea = new QScrollArea(this);
-    scrollArea->setGeometry(QRect(initialPoint,QPoint(size().width(),size().height())));
+    scrollArea->setGeometry(QRect(initialPoint,QPoint(700,500)));
     imageArea = new ImageArea(scrollArea);
     imageColorFirst = new QImage(QSize(21,21),QImage::Format_ARGB32_Premultiplied);
     imageColorSecond = new QImage(QSize(21,21),QImage::Format_ARGB32_Premultiplied);
@@ -36,8 +36,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->lineInstr,SIGNAL(clicked()),psigMapperInstrument,SLOT(map()));
     psigMapperInstrument->setMapping(ui->pencil,PENCIL);
     QObject::connect(ui->pencil,SIGNAL(clicked()),psigMapperInstrument,SLOT(map()));
-    psigMapperInstrument->setMapping(ui->brush,BRUSH);
-    QObject::connect(ui->brush,SIGNAL(clicked()),psigMapperInstrument,SLOT(map()));
     psigMapperInstrument->setMapping(ui->cut,CUT);
     QObject::connect(ui->cut,SIGNAL(clicked()),psigMapperInstrument,SLOT(map()));
     psigMapperInstrument->setMapping(ui->text,TEXT);
@@ -83,9 +81,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QObject::connect(ui->antialiasing,SIGNAL(toggled(bool)),imageArea,SLOT(setAntialiasing(bool)));
 
-    //Установка типа кисти
-//    QObject::connect(ui->brushStyle,SIGNAL(activated(QString)),imageArea,SLOT());
-
     //Menu
     //File
     ui->menuFile->addAction("New",imageArea,SLOT(newFile()),QKeySequence("CTRL+N"));
@@ -102,6 +97,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->menuEdit->addAction("Undo",imageArea,SLOT(undo()),QKeySequence("CTRL+Z"));
     ui->menuEdit->addAction("Redo",imageArea,SLOT(redo()),QKeySequence("CTRL+Y"));
 
+    QObject::connect(ui->setSize,SIGNAL(clicked(bool)),imageArea,SLOT(setSize()));
+
+    scaledFactor = new QLabel(this);
+    scaledFactor->setText("Scale: "+QString::number(100)+"%");
+    scaledFactor->setGeometry(QRect(QPoint(size().width()-100,size().height()-20),QPoint(size().width()-30,size().height()-5)));
+
     //Выбор начальных инструментов
     ui->rectangle->click();
     ui->colorSecond->click();
@@ -117,6 +118,11 @@ void MainWindow::setColorWidget(QImage* imageColorFirst,QImage* imageColorSecond
     this->imageColorSecond = imageColorSecond;
 }
 
+void MainWindow::setScale(int num)
+{
+    scaledFactor->setText("Scale: "+QString::number(num)+"%");
+}
+
 void MainWindow::paintEvent(QPaintEvent *event)
 {
     QPainter painter;
@@ -129,23 +135,9 @@ void MainWindow::paintEvent(QPaintEvent *event)
 
 void MainWindow::resizeEvent(QResizeEvent *re)
 {
-    scrollArea->setGeometry(QRect(initialPoint,QPoint(size().width()-initialPoint.x(),size().height()-initialPoint.y())));
+    scrollArea->setGeometry(QRect(initialPoint,QPoint(size().width()-30,size().height()-30)));
+    scaledFactor->setGeometry(QRect(QPoint(size().width()-100,size().height()-20),QPoint(size().width()-30,size().height()-5)));
 }
-
-void MainWindow::mousePressEvent(QMouseEvent *me)
-{
-
-}
-
-void MainWindow::mouseMoveEvent(QMouseEvent *me)
-{
-}
-
-void MainWindow::mouseReleaseEvent(QMouseEvent *me)
-{
-
-}
-
 
 MainWindow::~MainWindow()
 {

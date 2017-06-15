@@ -19,6 +19,7 @@ protected:
 private:
     bool isFirstClick;
     bool stopDraw;
+    QPoint firstPoint;
 };
 
 #endif // POLYGONALCHAININSTR_H
